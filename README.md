@@ -1,7 +1,7 @@
 
 # Package python for Aquarium
 
-![aquarium-python-api](https://github.com/fatfish-lab/aquarium-python-api/blob/main/doc/source/_static/logo.png?raw=true)
+![aquarium-python-api](https://github.com/fatfish-lab/aquarium-python-api/blob/main/docs/source/_static/logo.png?raw=true)
 
 > Aquarium python API is a tool that allows [Aquarium Studio](https://fatfi.sh/aquarium) users to interact with there data from directly from Python.
 
