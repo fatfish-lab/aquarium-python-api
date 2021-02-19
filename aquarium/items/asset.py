@@ -52,8 +52,8 @@ class Asset(Item):
         :param      task_status:  The status of the task
         :type       task_status:  string, optional
 
-        :returns:   List of task object
-        :rtype:     List of :class:`~aquarium.items.task.Task`
+        :returns:   List of Task object and Edge object
+        :rtype:     List of dictionary {item: :class:`~aquarium.items.task.Task`, edge: :class:`~aquarium.edge.Edge`}
         """
         query='# -($Child)> $Task'
         if task_name:
@@ -76,8 +76,8 @@ class Asset(Item):
         :param      task_status:  The status of the task used to filter
         :type       task_status:  string, optional
 
-        :returns:   List of Task object
-        :rtype:     List of :class:`~aquarium.items.task.Task`
+        :returns:   List of Task object and Edge object
+        :rtype:     List of dictionary {item: :class:`~aquarium.items.task.Task`, edge: :class:`~aquarium.edge.Edge`}
         """
         query="# -($Child)> $Task"
 

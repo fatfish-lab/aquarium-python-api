@@ -3,7 +3,7 @@ from .. import URL_CONTENT_TYPE
 from ..item import Item
 from ..element import Element
 import logging
-logger=logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class User(Item):
@@ -25,13 +25,14 @@ class User(Item):
         """
         logging.debug('Connect user %s', email)
         # Authenticate and retrieve the access token
-        payload=dict(email=email, password=password)
-        result=self.do_request('POST', 'signin', headers=URL_CONTENT_TYPE, data=payload)
+        payload = dict(email=email, password=password)
+        result = self.do_request(
+            'POST', 'signin', headers=URL_CONTENT_TYPE, data=payload)
 
        # Store authentification information
-        token=result.pop("token")
-        self.parent.token=token
-        result=self.parent.element(result)
+        token = result.pop("token")
+        self.parent.token = token
+        result = self.parent.element(result)
 
         return result
 
@@ -39,11 +40,11 @@ class User(Item):
         """
         Get the current profil.
 
-        :returns:   User object
-        :rtype:     :class:`~aquarium.items.user.User`
+        :returns:   User and Usergroup object
+        :rtype:     Dict {user: :class:`~aquarium.items.user.User`, usergroups: [:class:`~aquarium.items.usergroup.Usergroup`]}
         """
-        result=self.do_request('GET', 'users/me', headers=URL_CONTENT_TYPE)
-        result=self.parent.element(result)
+        result = self.do_request('GET', 'users/me', headers=URL_CONTENT_TYPE)
+        result = self.parent.element(result)
         return result
 
     def get_current(self):
@@ -53,7 +54,7 @@ class User(Item):
         :returns:   User object
         :rtype:     :class:`~aquarium.items.user.User`
         """
-        result=self.get_profile().user
+        result = self.get_profile().user
         return result
 
     def get_tasks(self, project_key='', task_status='', task_name='', task_completed=False):
@@ -69,11 +70,11 @@ class User(Item):
         :param      task_completed:   Filter the completed tasks
         :type       task_completed:  boolean, optional
 
-        :returns:   List of Task object
-        :rtype:     List of :class:`~aquarium.items.task.Task`
+        :returns:   List of Task object with there edge
+        :rtype:     List of dict {item: :class:`~aquarium.items.task.Task`, edge: :class:`~aquarium.edge.Edge`}
         """
-        task=list()
-        query=list()
+        task = list()
+        query = list()
 
         task.append("($Task")
         if task_completed:
@@ -88,10 +89,11 @@ class User(Item):
         query.append("# <($Assigned)- ({0}".format(' '.join(task)))
 
         if project_key:
-            query.append("AND (<($Child, 5)- item._key == '{0}' AND path.vertices[*].type NONE == 'User')".format(project_key))
+            query.append(
+                "AND (<($Child, 5)- item._key == '{0}' AND path.vertices[*].type NONE == 'User')".format(project_key))
 
         query.append(")")
 
-        result=self.traverse(meshql=' '.join(query))
-        result=[self.parent.element(data) for data in result]
+        result = self.traverse(meshql=' '.join(query))
+        result = [self.parent.element(data) for data in result]
         return result

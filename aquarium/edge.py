@@ -17,8 +17,8 @@ class Edge(Entity):
         :type       data:  dictionary
         """
         super(Edge, self).set_data_variables(data=data)
-        self._from=data.get('_from', '')
-        self._to=data.get('_to', '')
+        self._from = data.get('_from', '')
+        self._to = data.get('_to', '')
 
     def create(self, type='', from_key='', to_key='', data={}):
         """
@@ -39,13 +39,13 @@ class Edge(Entity):
         :returns:   Edge object
         :rtype:     :class:`~aquarium.edge.Edge`
         """
-        payload=dict(fromKey=from_key,
-                     toKey=to_key,
-                     type=type,
-                     data=data)
+        payload = dict(fromKey=from_key,
+                       toKey=to_key,
+                       type=type,
+                       data=data)
 
-        result=self.do_request('POST', 'edges', data=json.dumps(payload))
-        result=self.parent.element({'edge':result})
+        result = self.do_request('POST', 'edges', data=json.dumps(payload))
+        result = self.parent.cast(result)
         return result
 
     def replace_data(self, data={}):
@@ -62,10 +62,10 @@ class Edge(Entity):
         :returns:   Edge object
         :rtype:     :class:`~aquarium.edge.Edge`
         """
-        data=dict(data=data)
-        result=self.do_request(
+        data = dict(data=data)
+        result = self.do_request(
             'PUT', 'edges/'+self._key, data=json.dumps(data))
-        result=self.parent.element({'edge':result})   
+        result = self.parent.cast(result)
         return result
 
     def update_data(self, data={}):
@@ -78,10 +78,10 @@ class Edge(Entity):
         :returns:   Edge object
         :rtype:     :class:`~aquarium.edge.Edge`
         """
-        data=dict(data=data)
-        result=self.do_request(
+        data = dict(data=data)
+        result = self.do_request(
             'PATCH', 'edges/'+self._key, data=json.dumps(data))
-        result=self.parent.element({'edge':result})
+        result = self.parent.cast(result)
         return result
 
     def get(self, populate=False):
@@ -94,9 +94,9 @@ class Edge(Entity):
         :returns:   Edge object
         :rtype:     :class:`~aquarium.edge.Edge`
         """
-        result=self.do_request(
+        result = self.do_request(
             'GET', 'edges/{0}/?populate={1}'.format(self._key, to_string_url(populate)))
-        result=self.parent.element({'edge':result})
+        result = self.parent.cast(result)
         return result
 
     def delete(self):
@@ -109,6 +109,5 @@ class Edge(Entity):
         :returns:   Deleted edge object from API
         :rtype:     dictionary
         """
-        result=self.do_request('DELETE', 'edges/'+self._key)
-        result=self.parent.element({'edge':result})
+        result = self.do_request('DELETE', 'edges/' + self._key)
         return result

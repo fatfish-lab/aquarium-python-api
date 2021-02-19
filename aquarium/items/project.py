@@ -17,37 +17,37 @@ class Project(Item):
         :returns:   List of Project class
         :rtype:     List of :class:`~aquarium.items.project.Project`
         """
-        query=list()
+        query = list()
         query.append('# ($Project')
 
         if not show_all:
             query.append('AND item.data.completion != 1 AND NOT <($Trash)- *)')
 
         query.append(') SORT item.data.name ASC')
-        result=self.parent.query(meshql=' '.join(query))
-        result=[self.parent.cast(data) for data in result]
+        result = self.parent.query(meshql=' '.join(query))
+        result = [self.parent.cast(data) for data in result]
         return result
 
     def get_shots(self):
         """
         Gets all the shots of the project
 
-        :returns:   List of Shot class
-        :rtype:     List of :class:`~aquarium.items.shot.Shot`
+        :returns:   List of Shot class and Edge class
+        :rtype:     List of dictionary {item: :class:`~aquarium.items.shot.Shot`, edge: :class:`~aquarium.edge.Edge`}
         """
-        query="# -($Child, 5)> 0, 0 $Shot"
-        result=self.traverse(meshql=query)
-        result=[self.parent.element(data) for data in result]
+        query = "# -($Child, 5)> 0, 0 $Shot"
+        result = self.traverse(meshql=query)
+        result = [self.parent.element(data) for data in result]
         return result
 
     def get_assets(self):
         """
         Gets all the assets of the project
 
-        :returns:   List of Asset class
-        :rtype:     List of :class:`~aquarium.items.asset.Asset`
+        :returns:   List of Asset class and Edge class
+        :rtype:     List of dictionary {item: :class:`~aquarium.items.asset.Asset`, edge: :class:`~aquarium.edge.Edge`}
         """
-        query="# -($Child, 5)> 0, 0 $Asset"
-        result=self.traverse(meshql=query)
-        result=[self.parent.element(data) for data in result]
+        query = "# -($Child, 5)> 0, 0 $Asset"
+        result = self.traverse(meshql=query)
+        result = [self.parent.element(data) for data in result]
         return result

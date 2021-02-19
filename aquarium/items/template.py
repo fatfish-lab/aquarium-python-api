@@ -2,7 +2,7 @@
 from .. import URL_CONTENT_TYPE
 from ..item import Item
 import logging
-logger=logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Template(Item):
@@ -14,10 +14,11 @@ class Template(Item):
         """
         Apply the template on all its items.
 
-        :returns:   List of applied items
-        :rtype:     list
+        :returns:   Item template
+        :rtype:     :class:`~aquarium.items.template.Template`
         """
         logger.debug('Apply template %s', self._key)
-        result=self.do_request('POST', 'templates/'+str(self._key)+'/apply', headers=URL_CONTENT_TYPE)
-        result=self.parent.cast(result)
+        result = self.do_request(
+            'POST', 'templates/'+str(self._key)+'/apply', headers=URL_CONTENT_TYPE)
+        result = self.parent.cast(result)
         return result
