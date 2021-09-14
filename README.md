@@ -54,7 +54,7 @@ You can contact our team at [support@fatfi.sh](mailto:support@fatfi.sh).
 
 ### Build the documation
 
-1. `cd /path/to/package/aquarium-python-api/doc`
+1. `cd /path/to/package/aquarium-python-api/docs`
 2. `make html`
 
 ## Licence
