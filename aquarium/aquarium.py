@@ -190,6 +190,10 @@ class Aquarium(object):
         """
         Uploads a file on the server
 
+        .. note::
+            The file is just uploaded to Aquarium. The metadata are not saved on any item. Use :func:`~aquarium.item.Item.update_data` to save them on an item.
+            You can also directly upload a file on an item with :func:`~aquarium.item.Item.upload_file`.
+
         :param      path:  The path of the file to upload
         :type       path:  string
 
@@ -198,7 +202,8 @@ class Aquarium(object):
         """
         logger.debug('Upload file : %s', path)
         files=dict(file=open(path, 'rb'))
-        result=self.do_request('POST', 'upload', headers={}, files=files)
+        result = self.do_request('POST', 'upload', headers={'Content-Type': None}, files=files)
+        files['file'].close()
         return result
 
     def query(self, meshql='', aliases={}):

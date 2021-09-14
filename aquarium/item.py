@@ -371,7 +371,8 @@ class Item(Entity):
         logger.debug('Upload file %s on item %s', path, self._key)
         files = dict(file=open(path, 'rb'))
         result = self.do_request(
-            'POST', 'items/'+self._key+'/upload', headers={}, files=files)
+            'POST', 'items/'+self._key+'/upload', headers={'Content-Type': None}, files=files)
+        files['file'].close()
         return result
 
     def download_file(self, path=''):
