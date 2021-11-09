@@ -309,6 +309,30 @@ class Item(Entity):
         result = [self.parent.cast(data['item']) for data in result]
         return result
 
+    def move(self, old_parent_key=None, new_parent_key=None):
+        """
+        Move item from old parent to new parent
+
+        :param      old_parent_key:  The key of the old parent
+        :type       old_parent_key:  string
+        :param      new_parent_key:  The key of the new parent
+        :type       new_parent_key:  string
+
+        :returns:   New item parent and new child edge
+        :rtype:     dictionary {item: :class:`~aquarium.item.Item`,edge: :class:`~aquarium.edge.Edge`}
+        """
+        logger.debug('Move item %s from parent %s to %s',
+                     self._key, old_parent_key, new_parent_key)
+        data = dict(
+            oldParentKey=old_parent_key,
+            newParentKey=new_parent_key
+        )
+
+        result = self.do_request(
+            'PUT', 'items/'+self._key+'/move', data=json.dumps(data))
+        result = self.parent.element(result)
+        return result
+
     def trash(self, parent_key=''):
         """
         Move item from parent item to trash
