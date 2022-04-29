@@ -47,7 +47,7 @@ class Entity(object):
 
         if data:
             # As number or string
-            if isinstance(data, str) or isinstance(data, int) or isinstance(data, unicode):
+            if isinstance(data, str) or isinstance(data, int) or isinstance(data, type(u'')):
                 inst._key=str(data)
 
             # As dict
