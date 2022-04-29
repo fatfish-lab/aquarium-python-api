@@ -28,7 +28,7 @@ class Asset(Item):
         aliases={
             'view':{
                 "taskKey": "item._key",
-                "mediaKey": "# -($Child)> 0,1 $Media VIEW item._key"
+                "mediaKey": "FIRST(# -($Child)> 0,1 $Media VIEW item._key)"
             }
         }
 
