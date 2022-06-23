@@ -60,9 +60,10 @@ class Task(Item):
         statuses_dct = dict()
 
         for status in statuses:
-            name = status.get('status')
-            if name not in statuses_dct:
-                statuses_dct[name] = status
+            if status:
+                name = status.get('status')
+                if name not in statuses_dct:
+                    statuses_dct[name] = status
         result = statuses_dct or DEFAULT_STATUSES
         return result
 
