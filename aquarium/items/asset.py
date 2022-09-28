@@ -23,7 +23,7 @@ class Asset(Item):
         :returns:   Updated media object
         :rtype:     dictionary
         """
-        query="# -($Child)> $Task AND item.data.name == '{0}' VIEW $view".format(task_name)
+        query="# -($Child, 2)> $Task AND item.data.name == '{0}' VIEW $view".format(task_name)
 
         aliases={
             'view':{
