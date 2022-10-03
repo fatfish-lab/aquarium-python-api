@@ -27,6 +27,7 @@ class Aquarium(object):
     :param token: Specify the authentication token, to avoid :func:`~aquarium.aquarium.Aquarium.connect`
     :type token: string
 
+    :ivar token: Get the current token (populated after a first :func:`~aquarium.aquarium.Aquarium.connect`)
     :ivar edge: Access to :class:`~aquarium.edge.Edge`
     :ivar item: Access to :class:`~aquarium.item.Item`
     :ivar asset: Access to subclass :class:`~aquarium.items.asset.Asset`

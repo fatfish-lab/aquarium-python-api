@@ -23,7 +23,7 @@ aq.connect(AQ_USER, AQ_PASSWORD)
 
 ```{admonition} Sécurité
 :class: danger
-Si vous voulez permettre à vos utilisateurs de se reconnecter facilement sans avoir besoin de rentrer tous les jours un mot de passe, vous pouvez sauvegarder le token d'authentification. Une fois le token sauvegardé de manière sécurisée, vous pouvez le réutiliser au moment de l'initialisation de la classe Aquarium() :
+Si vous voulez permettre à vos utilisateurs de se reconnecter facilement sans avoir besoin de rentrer tous les jours un mot de passe, vous pouvez sauvegarder le token d'authentification. Le token est disponible directement dans la classe Aquarium (ex: `aq.token`). Une fois le token sauvegardé de manière sécurisée, vous pouvez le réutiliser au moment de l'initialisation de la classe Aquarium() :
 
 ```python
 aq=Aquarium('https://your-aquarium-server/v1', token=secured_token)

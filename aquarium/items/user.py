@@ -20,8 +20,8 @@ class User(Item):
         :param      password:  The password of the user
         :type       password:  string
 
-        :returns: Dictionary of token and User object
-        :rtype: dictionary
+        :returns: Dictionary User object
+        :rtype: Dict {user: :class:`~aquarium.items.user.User`}
         """
         logging.debug('Connect user %s', email)
         # Authenticate and retrieve the access token
@@ -41,7 +41,7 @@ class User(Item):
         Get the current profil.
 
         :returns:   User and Usergroup object
-        :rtype:     Dict {user: :class:`~aquarium.items.user.User`, usergroups: [:class:`~aquarium.items.usergroup.Usergroup`]}
+        :rtype:     Dict {user: :class:`~aquarium.items.user.User`, usergroups: [:class:`~aquarium.items.usergroup.Usergroup`], organisations: [:class:`~aquarium.item.Item`]}
         """
         result = self.do_request('GET', 'users/me', headers=URL_CONTENT_TYPE)
         result = self.parent.element(result)
