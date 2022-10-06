@@ -10,6 +10,7 @@ from .items.task import Task
 from .items.shot import Shot
 from .items.asset import Asset
 from .items.usergroup import Usergroup
+from .items.organisation import Organisation
 from .element import Element
 
 import requests
@@ -37,6 +38,7 @@ class Aquarium(object):
     :ivar template: Access to subclass :class:`~aquarium.items.template.Template`
     :ivar user: Access to subclass :class:`~aquarium.items.user.User`
     :ivar usergroup: Access to subclass :class:`~aquarium.items.usergroup.Usergroup`
+    :ivar organisation: Access to subclass :class:`~aquarium.items.organisation.Organisation`
     """
 
     def __init__(self, api_url='', token=''):
@@ -52,10 +54,11 @@ class Aquarium(object):
         self.element=Element(parent=self)
         self.item=Item(parent=self)
         self.edge=Edge(parent=self)
+        # SubClasses
         self.user=User(parent=self)
         self.usergroup=Usergroup(parent=self)
+        self.organisation=Organisation(parent=self)
         self.template=Template(parent=self)
-        # SubClasses
         self.project=Project(parent=self)
         self.task=Task(parent=self)
         self.shot=Shot(parent=self)
@@ -133,6 +136,8 @@ class Aquarium(object):
                     cls=self.shot
                 elif type=='Task':
                     cls=self.task
+                elif type=='Organisation':
+                    cls=self.organisation
                 else:
                     cls=self.item
             #As Edge
