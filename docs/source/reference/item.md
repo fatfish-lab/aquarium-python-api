@@ -12,6 +12,7 @@ items/task
 items/template
 items/user
 items/usergroup
+items/organisation
 ```
 
 

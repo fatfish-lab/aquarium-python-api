@@ -33,7 +33,7 @@ class Project(Item):
         Gets all the shots of the project
 
         :returns:   List of Shot class, Edge class and Tasks
-        :rtype:     List of dictionary {item: :class:`~aquarium.items.shot.Shot`, edge: :class:`~aquarium.edge.Edge`, tasks: []}
+        :rtype:     List of dictionary {item: :class:`~aquarium.items.shot.Shot`, edge: :class:`~aquarium.edge.Edge`, tasks: [:class:`~aquarium.items.task.Task`]}
         """
         query = "# -($Child, 5)> 0, 0 $Shot VIEW $view"
         aliases = {
