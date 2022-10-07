@@ -40,8 +40,8 @@ class User(Item):
         """
         Get the current profil.
 
-        :returns:   User and Usergroup object
-        :rtype:     Dict {user: :class:`~aquarium.items.user.User`, usergroups: [:class:`~aquarium.items.usergroup.Usergroup`], organisations: [:class:`~aquarium.item.Item`]}
+        :returns:   User, Usergroups and Organisations object
+        :rtype:     Dict {user: :class:`~aquarium.items.user.User`, usergroups: [:class:`~aquarium.items.usergroup.Usergroup`], organisations: [:class:`~aquarium.items.organisation.Organisation`]}
         """
         result = self.do_request('GET', 'users/me', headers=URL_CONTENT_TYPE)
         result = self.parent.element(result)

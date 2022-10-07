@@ -172,6 +172,24 @@ class Aquarium(object):
         logger.debug('Clear authentication token for logout')
         self.token=''
 
+    def me(self):
+        """
+        Alias of self.get_current_user()
+
+        :returns:   A :class:`~aquarium.items.user.User` instance of the connected user.
+        :rtype:     :class:`~aquarium.items.user.User` object
+        """
+        return self.get_profile()
+
+    def mine(self):
+        """
+        Alias of self.user.get_profile()
+
+        :returns:   User, Usergroups and Organisations object
+        :rtype:     Dict {user: :class:`~aquarium.items.user.User`, usergroups: [:class:`~aquarium.items.usergroup.Usergroup`], organisations: [:class:`~aquarium.items.organisation.Organisation`]}
+        """
+        return self.get_current_user()
+
     def get_current_user(self):
         """
         Gets the user profil of the connected user
