@@ -12,7 +12,7 @@ class Item(Entity):
     This class describes an Item object child of Aquarium class.
     """
 
-    def create(self, type='', data={}):
+    def create(self, type='', data={}, path=None):
         """
         Create an item
 
@@ -25,8 +25,10 @@ class Item(Entity):
 
         :param      type:  The newitem type
         :type       type:  string
-        :param      data:  The newitem data, optional
-        :type       data:  dictionary
+        :param      data:  The newitem data
+        :type       data:  dictionary, optional
+        :param      path:  File path you want to upload on the appended item
+        :type       path:  string, optional
 
         :returns:   Item object
         :rtype:     :class:`~aquarium.item.Item` or subclass : :class:`~aquarium.items.asset.Asset` | :class:`~aquarium.items.project.Project` | :class:`~aquarium.items.shot.Shot` | :class:`~aquarium.items.task.Task` | :class:`~aquarium.items.template.Template` | :class:`~aquarium.items.user.User` | :class:`~aquarium.items.usergroup.Usergroup`
@@ -35,9 +37,15 @@ class Item(Entity):
         payload = dict(type=type, data=data)
         result = self.do_request('POST', 'items', data=json.dumps(payload))
         result = self.parent.cast(result)
+
+        if path != None:
+            upload = result.upload_file(path=path)
+            if upload != None:
+                for key in upload.data:
+                    result.data[key] = upload.data[key]
         return result
 
-    def append(self, type='', data={}, edge_type='Child', edge_data={}, apply_template=None, template_key=None):
+    def append(self, type='', data={}, edge_type='Child', edge_data={}, apply_template=None, template_key=None, path=None):
         """
         Create and append a new item to the current one
 
@@ -53,9 +61,11 @@ class Item(Entity):
         :type       apply_template:  boolean, optional
         :param      template_key:    The template key to apply. If no template key, `automatic context's template <https://docs.fatfish.app/#/userguide/items?id=templates>`_ will be used.
         :type       template_key:    string, optional
+        :param      path:            File path you want to upload on the appended item
+        :type       path:            string, optional
 
         :returns:   Dictionary composed by an item and its edge.
-        :rtype:     dict {item: :class:`~aquarium.item.Item` or subclass : :class:`~aquarium.items.asset.Asset` | :class:`~aquarium.items.project.Project` | :class:`~aquarium.items.shot.Shot` | :class:`~aquarium.items.task.Task` | :class:`~aquarium.items.template.Template` | :class:`~aquarium.items.user.User` | :class:`~aquarium.items.usergroup.Usergroup`, edge: :class:`~aquarium.edge.Edge}`
+        :rtype:     dict {item: :class:`~aquarium.item.Item` or subclass : :class:`~aquarium.items.asset.Asset` | :class:`~aquarium.items.project.Project` | :class:`~aquarium.items.shot.Shot` | :class:`~aquarium.items.task.Task` | :class:`~aquarium.items.template.Template` | :class:`~aquarium.items.user.User` | :class:`~aquarium.items.usergroup.Usergroup` | :class:`~aquarium.items.organisation.Organisation`, edge: :class:`~aquarium.edge.Edge}`
         """
 
         payload = {
@@ -78,6 +88,13 @@ class Item(Entity):
         result = self.do_request(
             'POST', 'items/'+self._key+'/append', data=json.dumps(payload))
         result = self.parent.element(result)
+
+        if path != None:
+            upload = result.item.upload_file(path=path)
+            if upload != None:
+                for key in upload.data:
+                    result.item.data[key] = upload.data[key]
+
         return result
 
     def traverse(self, meshql='', aliases={}):
@@ -280,20 +297,39 @@ class Item(Entity):
         result = [self.parent.element(data) for data in result]
         return result
 
-    def get_children(self, show_hidden=False):
+    def get_children(self, show_hidden=False, types=None, names=None):
         """
         Gets the children of the item
 
         :param      show_hidden:  Show hidden items
         :type       show_hidden:  boolean, optional
+        :param      types:  One string or list of string items type you want to filter
+        :type       types:  string or list, optional
+        :param      names:  One string or list of string items name you want to filter
+        :type       names:  string or list, optional
 
         :returns:   List of item and edge object
         :rtype:     list of {item: :class:`~aquarium.item.Item`, edge: :class:`~aquarium.edge.Edge`}
         """
-        query = "# -($Child)> *"
+        query = ["# -($Child)>"]
+        aliases = dict()
+
+        if types == None:
+            query.append('*')
+        else:
+            query.append('item.type IN @types')
+            if not isinstance(types, list): types=[types]
+            aliases['types'] = types
+
+        if names != None:
+            query.append('AND item.data.name IN @names')
+            if not isinstance(names, list): names=[names]
+            aliases['names'] = names
+
         if not show_hidden:
-            query += ' AND edge.data.isHidden != true'
-        result = self.traverse(meshql=query)
+            query.append(' AND edge.data.isHidden != true')
+
+        result = self.traverse(meshql=' '.join(query), aliases=aliases)
         result = [self.parent.element(data) for data in result]
         return result
 
@@ -393,8 +429,8 @@ class Item(Entity):
         :param      message:  The message associated with the upload, optional
         :type       message:  string
 
-        :returns:   item object from API
-        :rtype:     dictionary
+        :returns:   Item object
+        :rtype:     :class:`~aquarium.item.Item`
         """
         logger.debug('Upload file %s on item %s with data %s', path, self._key, data)
 
@@ -406,6 +442,7 @@ class Item(Entity):
         result = self.do_request(
             'POST', 'items/'+self._key+'/upload', headers={'Content-Type': None}, files=files)
         files['file'].close()
+        result = self.parent.cast(result)
         return result
 
     def download_file(self, path=''):
