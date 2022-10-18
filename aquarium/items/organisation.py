@@ -75,7 +75,7 @@ class Organisation(Item):
 
         payload = dict(email=email, name=name)
         member = self.do_request(
-            'POST', 'organisation/{0}/createMember'.format(self._key), data=json.dumps(payload))
+            'POST', 'organisations/{0}/createMember'.format(self._key), data=json.dumps(payload))
 
         member = self.parent.cast(member)
         return member
