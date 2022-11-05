@@ -26,7 +26,7 @@ Après avoir importer le package aquarium, vous pouvez créer une instance Aquar
 ```python
 from aquarium import Aquarium
 
-aq=Aquarium('https://your-aquarium-server/v1')
+aq=Aquarium('https://your-aquarium-server')
 aq.connect(AQ_USER, AQ_PASSWORD)
 
 me=aq.get_current_user()

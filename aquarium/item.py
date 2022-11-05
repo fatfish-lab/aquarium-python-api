@@ -422,6 +422,11 @@ class Item(Entity):
         """
         Upload a file on the item
 
+        .. warning::
+            This function will replace the data on the item.
+            It's here to replace the existing file's data by creating a new history entry.
+            We advice you to use :func:`~aquarium.item.Item.append` if you want to upload the file as a new item.
+
         :param      path:  The path of the file to upload
         :type       path:  string
         :param      data:  The data you want to upload with the file, optional
