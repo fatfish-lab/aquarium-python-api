@@ -168,7 +168,7 @@ class Aquarium(object):
 
         return value
 
-    def connect(self, email='', password=''):
+    def signin(self, email='', password=''):
         """
         Sign in a user with its email and password
 
@@ -177,48 +177,63 @@ class Aquarium(object):
         :param      password:  The password of the user
         :type       password:  string
         """
-        return self.user.connect(email=email, password=password)
+        return self.user.signin(email=email, password=password)
 
-    def logout(self):
+    def connect(self, email='', password=''):
+        """
+        Alias of :func:`~aquarium.aquarium.Aquarium.signin`
+        """
+        return self.user.signin(email=email, password=password)
+
+    def signout(self):
         """
         Sign out current user by clearing the stored authentication token
 
         .. note::
-            After a :func:`~aquarium.aquarium.Aquarium.logout`, you need to use a :func:`~aquarium.aquarium.Aquarium.connect` before sending authenticated requests
+            After a :func:`~aquarium.aquarium.Aquarium.signout`, you need to use a :func:`~aquarium.aquarium.Aquarium.signin` before sending authenticated requests
 
         :returns: None
         """
         logger.info('Disconnect current user')
         logger.debug('Clear authentication token for logout')
-        self.token=''
+        self.user.signout()
+
+    def logout(self):
+        """
+        Alias of :func:`~aquarium.aquarium.Aquarium.signout`
+        """
+        self.signout()
 
     def me(self):
         """
-        Alias of self.get_current_user()
+        Alias of :func:`~aquarium.aquarium.Aquarium.get_current_user`
+
 
         :returns:   A :class:`~aquarium.items.user.User` instance of the connected user.
         :rtype:     :class:`~aquarium.items.user.User` object
-        """
-        return self.get_profile()
-
-    def mine(self):
-        """
-        Alias of self.user.get_profile()
-
-        :returns:   User, Usergroups and Organisations object
-        :rtype:     Dict {user: :class:`~aquarium.items.user.User`, usergroups: [:class:`~aquarium.items.usergroup.Usergroup`], organisations: [:class:`~aquarium.items.organisation.Organisation`]}
         """
         return self.get_current_user()
 
     def get_current_user(self):
         """
-        Gets the user profil of the connected user
+        Alias of :func:`~aquarium.items.user.User.get_current`
+
 
         :returns:   A :class:`~aquarium.items.user.User` instance of the connected user.
         :rtype:     :class:`~aquarium.items.user.User` object
         """
         result=self.user.get_current()
         return result
+
+    def mine(self):
+        """
+        Alias of :func:`~aquarium.items.user.User.get_profile`
+
+
+        :returns:   User, Usergroups and Organisations object
+        :rtype:     Dict {user: :class:`~aquarium.items.user.User`, usergroups: [:class:`~aquarium.items.usergroup.Usergroup`], organisations: [:class:`~aquarium.items.organisation.Organisation`]}
+        """
+        return self.user.get_profile()
 
     def get_server_status(self):
         """
