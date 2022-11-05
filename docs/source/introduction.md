@@ -17,7 +17,7 @@ En créant une instance, vous allez pouvoir réutiliser votre identification san
 ```python
 from aquarium import Aquarium
 
-aq=Aquarium('https://your-aquarium-server/v1')
+aq=Aquarium('https://your-aquarium-server')
 aq.connect(AQ_USER, AQ_PASSWORD)
 ```
 
@@ -26,7 +26,7 @@ aq.connect(AQ_USER, AQ_PASSWORD)
 Si vous voulez permettre à vos utilisateurs de se reconnecter facilement sans avoir besoin de rentrer tous les jours un mot de passe, vous pouvez sauvegarder le token d'authentification. Le token est disponible directement dans la classe Aquarium (ex: `aq.token`). Une fois le token sauvegardé de manière sécurisée, vous pouvez le réutiliser au moment de l'initialisation de la classe Aquarium() :
 
 ```python
-aq=Aquarium('https://your-aquarium-server/v1', token=secured_token)
+aq=Aquarium('https://your-aquarium-server', token=secured_token)
 ```
 
 ## Les classes Item() et Edge()

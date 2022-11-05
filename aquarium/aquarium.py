@@ -14,6 +14,13 @@ from .items.organisation import Organisation
 from .element import Element
 
 import requests
+
+import sys
+if sys.version_info[0] > 2:
+    from urllib.parse import urljoin, urlparse
+else:
+    from urlparse import urljoin, urlparse
+
 import json
 import logging
 logger=logging.getLogger(__name__)
@@ -23,10 +30,12 @@ class Aquarium(object):
     """
     This class describes the main class of Aquarium
 
-    :param api_url: Specify the URL of the API. Don't forget to add the version you use ex: `/v1`
+    :param api_url: Specify the URL of the API.
     :type api_url: string
     :param token: Specify the authentication token, to avoid :func:`~aquarium.aquarium.Aquarium.connect`
-    :type token: string
+    :type token: string, optional
+    :param api_version: Specify the API version you want to use (default : `v1`).
+    :type api_version: string, optional
 
     :ivar token: Get the current token (populated after a first :func:`~aquarium.aquarium.Aquarium.connect`)
     :ivar edge: Access to :class:`~aquarium.edge.Edge`
@@ -41,7 +50,7 @@ class Aquarium(object):
     :ivar organisation: Access to subclass :class:`~aquarium.items.organisation.Organisation`
     """
 
-    def __init__(self, api_url='', token=''):
+    def __init__(self, api_url='', token='', api_version='v1'):
         """
         Constructs a new instance.
         """
@@ -49,6 +58,7 @@ class Aquarium(object):
         self.session=requests.Session()
 
         self.api_url=api_url
+        self.api_version=api_version
         self.token=token
         # Classes
         self.element=Element(parent=self)
@@ -92,9 +102,19 @@ class Aquarium(object):
 
         args=list(args)
         typ=args[0]
-        path=self.api_url
+        path = self.api_url
+
         if len(args) > 1:
-            path += '/'+args[1]
+            is_files = args[1].find('/files/') >= 0
+            if (is_files):
+                path = urljoin(path, args[1])
+            else:
+                path = urljoin(path, '{api_version}/{endpoint}'.format(
+                    api_version=self.api_version,
+                    endpoint=args[1]
+                ))
+        else:
+            path = urljoin(path, self.api_version)
 
         logger.debug('Send request : %s %s', typ, path)
         self.session.headers.update(headers)

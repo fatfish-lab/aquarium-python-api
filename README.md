@@ -11,7 +11,7 @@ Aquarium Studio is developed by [Fatfish Lab](https://fatfi.sh)
 # -*- coding: utf-8 -*-
 from aquarium import Aquarium
 
-aq = Aquarium('https://your-aquarium-server/v1')
+aq = Aquarium('https://your-aquarium-server')
 aq.connect(AQ_USER, AQ_PASSWORD)
 
 me = aq.get_current_user()
