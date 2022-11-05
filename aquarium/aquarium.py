@@ -285,3 +285,17 @@ class Aquarium(object):
         data=dict(query=meshql, aliases=aliases)
         result=self.do_request('POST', 'query', data=json.dumps(data))
         return result
+
+    def get_file(self, file_path):
+        """
+        Get stored file on Aquarium server
+
+        :param      file_path:     The file path from item property (Exemple: `/files/file_id.jpg`)
+        :type       file_path:     string
+
+        :returns:   The file
+        :rtype:     list
+        """
+
+        response = self.do_request('GET', file_path, decoding=False)
+        return response.content
