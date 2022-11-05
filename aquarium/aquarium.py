@@ -267,7 +267,10 @@ class Aquarium(object):
 
     def query(self, meshql='', aliases={}):
         """
-        Query Entitys
+        Query entities
+
+        .. tip::
+            For better performances, we advice you to use the function :func:`~aquarium.item.Item.traverse`
 
         :param      meshql:        The meshql string
         :type       meshql:        string
