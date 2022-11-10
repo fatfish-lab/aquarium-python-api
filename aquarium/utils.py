@@ -1,59 +1,52 @@
 # -*- coding: utf-8 -*-
-import pprint
+import datetime
+import pytz
 import logging
-logger=logging.getLogger(__name__)
-from .exceptions import RequestError, AuthentificationError,\
-                        AutorisationError, PathNotFoundError, \
-                        ConflictError, UploadExceedLimit, InternalError
+logger = logging.getLogger(__name__)
 
-def pretty_print_format(data={}, indent=8, width=80, depth=10):
-    dict_string=pprint.pformat(data, indent=indent, width=width, depth=depth)
-    return dict_string
 
-def to_string_url(value=None):
+class Utils():
     """
-    Convert value to string url convention
-
-    :param      value:  The value to convert
-    :type       value:  number
-
-    :returns:   The value converted
-    :rtype:     string
+    This class is a utility class.
     """
-    return str(value).lower()
 
-def evaluate(response=None):
-    """
-    Evaluate request response
+    @staticmethod
+    def duration(days = 0, hours = 0, minutes = 0):
+        """
+        Generate an ISO 8601 duration string.
 
-    :param      response:        The response
-    :type       response:        Response object
+        :param      days:     The number of days to add
+        :type       days:     number
+        :param      hours:    The number of hours to add
+        :type       hours:    number
+        :param      minutes:  The number of minutes to add
+        :type       minutes:  number
 
-    :returns:   True if succeed
-    :rtype:     boolean
+        :returns:   ISO 8601 duration string
+        :rtype:     string
+        """
+        return 'P{days}{time}{hours}{minutes}'.format(
+            days='{days}D'.format(days=days) if days > 0 else '',
+            time='T' if hours > 0 or minutes > 0 else '',
+            hours='{hours}H'.format(hours=hours) if hours > 0 else '',
+            minutes='{minutes}M'.format(minutes=minutes) if minutes > 0 else '')
 
-    :raises     RuntimeError:  "error" value from response
-    """
-    status_code=response.status_code
-    url=response.url
-    logger.debug('Evaluate request response : status_code : %s / url : %s', status_code, url)
-    if status_code == 200:
-        return True
-    elif status_code==400:
-        raise RequestError(response)
-    elif status_code==401:
-        raise AuthentificationError(response)
-    elif status_code==403:
-        raise AutorisationError(response)
-    elif status_code==404:
-        raise PathNotFoundError(response)
-    elif status_code==409:
-        raise ConflictError(response)
-    elif status_code==413:
-        raise UploadExceedLimit(response)
-    elif status_code==500:
-        raise InternalError(response)
-    else:
-        raise RuntimeError('code {0} : {1} url:{2}'.format(
-            status_code, response, url))
+    @staticmethod
+    def date(date=None):
+        """
+        Generate an ISO 8601 date string.
 
+        :param      date:     The date to convert. If not defined, the current date & time will be used
+        :type       date:     datetime, optional
+
+        :returns:   ISO 8601 date string
+        :rtype:     string
+        """
+
+        if date == None:
+            date = datetime.datetime.now()
+
+        if isinstance(date, datetime.datetime):
+            date = date.astimezone(pytz.UTC)
+
+        return date.isoformat(timespec='milliseconds')

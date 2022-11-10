@@ -22,7 +22,7 @@ class Task(Item):
             type='Assigned', from_key=self._key, to_key=user_key)
         return result
 
-    def add_timelog(self, user_key='', comment='', date='', duration=''):
+    def add_timelog(self, user_key, comment='', date='', duration=''):
         """
         Add a timelog to the task
 
@@ -30,14 +30,17 @@ class Task(Item):
         :type       user_key:  string
         :param      comment:   The comment
         :type       comment:   string
-        :param      date:      The date
+        :param      date:      The date of the timelog. Use :func:`~aquarium.utils.Utils.date` to generate an ISO date string.
         :type       date:      string ISO 8601 (date)
-        :param      duration:  The duration
+        :param      duration:  The duration of the timelog. Use :func:`~aquarium.utils.Utils.duration` to generate an ISO duration string.
         :type       duration:  string ISO 8601 (duration)
 
         :returns:   Dictionary of Item object and Edge object
         :rtype:     dictionary {item: :class:`~aquarium.item.Item`, edge: :class:`~aquarium.edge.Edge`}
         """
+
+        if user_key == None:
+            user_key = self.parent.me()._key
 
         data = dict(
             duration=duration,

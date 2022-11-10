@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from . import URL_CONTENT_TYPE
 import json
-from .utils import to_string_url
+from .tools import to_string_url
 from .entity import Entity
 import logging
 logger = logging.getLogger(__name__)

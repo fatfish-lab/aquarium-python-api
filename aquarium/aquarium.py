@@ -2,7 +2,7 @@
 from . import JSON_CONTENT_TYPE
 from .item import Item
 from .edge import Edge
-from .utils import evaluate
+from .tools import evaluate
 from .items.user import User
 from .items.template import Template
 from .items.project import Project
@@ -13,6 +13,7 @@ from .items.usergroup import Usergroup
 from .items.organisation import Organisation
 from .items.playlist import Playlist
 from .element import Element
+from .utils import Utils
 
 import requests
 
@@ -33,22 +34,36 @@ class Aquarium(object):
 
     :param api_url: Specify the URL of the API.
     :type api_url: string
-    :param token: Specify the authentication token, to avoid :func:`~aquarium.aquarium.Aquarium.connect`
+    :param token: Specify the authentication token, to avoid :func:`~aquarium.aquarium.Aquarium.signin`
     :type token: string, optional
     :param api_version: Specify the API version you want to use (default : `v1`).
     :type api_version: string, optional
 
-    :ivar token: Get the current token (populated after a first :func:`~aquarium.aquarium.Aquarium.connect`)
-    :ivar edge: Access to :class:`~aquarium.edge.Edge`
-    :ivar item: Access to :class:`~aquarium.item.Item`
-    :ivar asset: Access to subclass :class:`~aquarium.items.asset.Asset`
-    :ivar project: Access to subclass :class:`~aquarium.items.project.Project`
-    :ivar shot: Access to subclass :class:`~aquarium.items.shot.Shot`
-    :ivar task: Access to subclass :class:`~aquarium.items.task.Task`
-    :ivar template: Access to subclass :class:`~aquarium.items.template.Template`
-    :ivar user: Access to subclass :class:`~aquarium.items.user.User`
-    :ivar usergroup: Access to subclass :class:`~aquarium.items.usergroup.Usergroup`
-    :ivar organisation: Access to subclass :class:`~aquarium.items.organisation.Organisation`
+    :var token: Get the current token (populated after a first :func:`~aquarium.aquarium.Aquarium.signin`)
+    :var edge: Access to Edge class
+    :vartype edge: :class:`~aquarium.edge.Edge`
+    :var item: Access to Item class
+    :vartype item: :class:`~aquarium.item.Item`
+    :var asset: Access to Asset subclass
+    :vartype asset: :class:`~aquarium.items.asset.Asset`
+    :var playlist: Access to Playlist subclass
+    :vartype playlist: :class:`~aquarium.items.playlist.Playlist`
+    :var project: Access to Project subclass
+    :vartype project: :class:`~aquarium.items.project.Project`
+    :var shot: Access to Shot subclass
+    :vartype shot: :class:`~aquarium.items.shot.Shot`
+    :var task: Access to Task subclass
+    :vartype task: :class:`~aquarium.items.task.Task`
+    :var template: Access to Template subclass
+    :vartype template: :class:`~aquarium.items.template.Template`
+    :var user: Access to User subclass
+    :vartype user: :class:`~aquarium.items.user.User`
+    :var usergroup: Access to Usergroup subclass
+    :vartype usergroup: :class:`~aquarium.items.usergroup.Usergroup`
+    :var organisation: Access to Organisation subclass
+    :vartype organisation: :class:`~aquarium.items.organisation.Organisation`
+    :var utils: Access to Utils class
+    :vartype utils: :class:`~aquarium.utils.Utils`
     """
 
     def __init__(self, api_url='', token='', api_version='v1'):
@@ -65,6 +80,7 @@ class Aquarium(object):
         self.element=Element(parent=self)
         self.item=Item(parent=self)
         self.edge=Edge(parent=self)
+        self.utils=Utils()
         # SubClasses
         self.user=User(parent=self)
         self.usergroup=Usergroup(parent=self)
