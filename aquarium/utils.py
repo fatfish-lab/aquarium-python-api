@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import sys
 import datetime
 import pytz
 import logging
@@ -32,21 +33,17 @@ class Utils():
             minutes='{minutes}M'.format(minutes=minutes) if minutes > 0 else '')
 
     @staticmethod
-    def date(date=None):
+    def date():
         """
         Generate an ISO 8601 date string.
-
-        :param      date:     The date to convert. If not defined, the current date & time will be used
-        :type       date:     datetime, optional
 
         :returns:   ISO 8601 date string
         :rtype:     string
         """
 
-        if date == None:
-            date = datetime.datetime.now()
+        date = datetime.datetime.now(pytz.UTC)
 
-        if isinstance(date, datetime.datetime):
-            date = date.astimezone(pytz.UTC)
-
-        return date.isoformat(timespec='milliseconds')
+        if sys.version_info[0] > 2:
+            return date.isoformat(timespec='milliseconds')
+        else:
+            return date.isoformat()
