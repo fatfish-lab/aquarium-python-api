@@ -11,6 +11,7 @@ from .items.shot import Shot
 from .items.asset import Asset
 from .items.usergroup import Usergroup
 from .items.organisation import Organisation
+from .items.playlist import Playlist
 from .element import Element
 
 import requests
@@ -70,6 +71,7 @@ class Aquarium(object):
         self.organisation=Organisation(parent=self)
         self.template=Template(parent=self)
         self.project=Project(parent=self)
+        self.playlist=Playlist(parent=self)
         self.task=Task(parent=self)
         self.shot=Shot(parent=self)
         self.asset=Asset(parent=self)
@@ -144,6 +146,8 @@ class Aquarium(object):
                 type=data.get('type')
                 if type=='Project':
                     cls=self.project
+                if type=='Playlist':
+                    cls=self.playlist
                 elif type=='User':
                     cls=self.user
                 elif type=='Template':

@@ -7,6 +7,7 @@
 
 items/asset
 items/project
+items/playlist
 items/shot
 items/task
 items/template
