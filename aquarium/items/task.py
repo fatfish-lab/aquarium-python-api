@@ -15,12 +15,32 @@ class Task(Item):
         :param      user_key:  The user key
         :type       user_key:  string
 
-        :returns:   Edge object
+        :returns:   Created assigned edge object
         :rtype:     :class:`~aquarium.edge.Edge`
         """
         result = self.parent.edge.create(
-            type='Assigned', from_key=self._key, to_key=user_key)
+            type='Assigned', from_key=str(self._key), to_key=str(user_key))
         return result
+
+    def unassign_from(self, user_key=''):
+        """
+        Unassign the task from user
+
+        :param      user_key:  The user key
+        :type       user_key:  string
+
+        :returns:   Deleted assigned edge object
+        :rtype:     :class:`~aquarium.edge.Edge`
+        """
+        result = self.traverse(
+            meshql='# -($Assigned)> 0,1 $User AND item._key == "{user_key}" VIEW edge'.format(user_key=user_key))
+
+        if len(result) > 0:
+            assigned_edge = self.parent.cast(result[0])
+            assigned_edge.delete()
+            return assigned_edge
+        else:
+            return None
 
     def add_timelog(self, user_key, comment='', date='', duration=''):
         """
