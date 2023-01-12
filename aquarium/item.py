@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from . import URL_CONTENT_TYPE
 import json
+import re
+import os
 from .tools import to_string_url
 from .entity import Entity
 import logging
@@ -450,21 +452,36 @@ class Item(Entity):
         result = self.parent.cast(result)
         return result
 
-    def download_file(self, path=''):
+    def download_file(self, path, versionKey=None):
         """
         Download the item's file to the path
 
-        :param      path:  The path used to store the download
+        :param      path:  The path used to store the download. If directory is provided, the file name from original file is used
         :type       path:  string
+        :param      versionKey:  The versionKey used to download the file
+        :type       versionKey:  string, optional
         """
         logger.debug('Download from item %s to file %s', self._key, path)
+
+        url = 'items/{_key}/download'.format(_key=self._key)
+        if (versionKey != None):
+            url = '{url}?versionKey=${versionKey}'.format(versionKey=versionKey)
+
         result = self.do_request(
-            'GET', 'items/'+self._key+'/download', headers=URL_CONTENT_TYPE, decoding=False)
+            'GET', url, headers=URL_CONTENT_TYPE, decoding=False)
+
+        if (os.path.isdir(path)):
+            content_disposition = result.headers['content-disposition']
+            filename = re.findall('filename="(.+)"', content_disposition)
+            print(content_disposition)
+            if len(filename) > 0:
+                path = os.path.join(path, str(filename[0]))
+
         with open(path, 'wb') as f:
             for chunk in result:
                 f.write(chunk)
-        result = result.json()
-        return result
+
+        return path
 
     def import_json(self, content={}):
         """
