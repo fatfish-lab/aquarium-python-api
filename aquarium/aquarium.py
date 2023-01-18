@@ -162,7 +162,7 @@ class Aquarium(object):
                 type=data.get('type')
                 if type=='Project':
                     cls=self.project
-                if type=='Playlist':
+                elif type=='Playlist':
                     cls=self.playlist
                 elif type=='User':
                     cls=self.user
