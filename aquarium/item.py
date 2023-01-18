@@ -287,6 +287,103 @@ class Item(Entity):
         result = [self.parent.element(data) for data in result]
         return result
 
+    def create_permission(self, participant_key, permissions, propagate = True):
+        """
+        Create a new permission on an item. It's like sharing an item to an existing user, usergroup or organisation.
+
+        :param      participant_key:    The _key of the user, usergroup or organisation to invite.
+        :type       participant_key:    string
+        :param      permissions:        The permissions you want to grant to the participant.
+        :type       permissions:        string
+        :param      propagate:          Propagate or not this new permission.
+        :type       propagate:          boolean, optional
+
+        .. tip::
+            Available permissions :
+                * Can read is `r`
+                * Can write is `w`
+                * Can add content is `a`
+                * Can trash content is `t`
+                * Can link (assign, favorite..) is `l`
+                * Can unlink is `u`
+                * Can share is `s`
+                * Can delete is `d`
+                * Can change permissions is `g`
+
+            Examples:
+                * Read only is `permissions='r'`
+                * Write is `permissions='rwa'`
+                * Write & connect is `permissions='rwalu'`
+                * Write, connect & trash is `permissions='rwatlu'`
+                * Write, connect, trash & share is `permissions='rwatslu'`
+                * Admin is `permissions='rwsadtlug'`
+
+            The special permission `*`, is to avoid permissions inheritage when append content.
+
+
+        :returns:   A dict with the {user: participant, edge: the created permission edge}
+        :rtype:     dict
+        """
+        data = {
+            'userKey': participant_key,
+            'data': {
+                'permissions': permissions
+            },
+            'propagate': propagate
+        }
+        result = self.do_request(
+            'POST', 'items/{0}/permissions'.format(self._key), data=json.dumps(data))
+        result['user'] = self.parent.cast(result['user'])
+        return result
+
+    def remove_permission(self, participant_key):
+        """
+        Remove an existing permission from an item. It's like unsharing an item to an existing user, usergroup or organisation.
+
+        :param      participant_key:    The _key of the user, usergroup or organisation to invite.
+        :type       participant_key:    string
+
+        :returns:   A dict with the {user: participant, edge: the removed permission edge}
+        :rtype:     dict
+        """
+        data = {
+            'userKey': participant_key
+        }
+        result = self.do_request(
+            'DELETE', 'items/{0}/permissions'.format(self._key), data=json.dumps(data))
+        result['user'] = self.parent.cast(result['user'])
+        return result
+
+    def update_permission(self, participant_key, permissions, propagate=True):
+        """
+        Update an existing permission on an item.
+
+        :param      participant_key:    The _key of the user, usergroup or organisation to invite.
+        :type       participant_key:    string
+        :param      permissions:        The permissions you want to grant to the participant.
+        :type       permissions:        string
+        :param      propagate:          Propagate or not this new permission.
+        :type       propagate:          boolean, optional
+
+        .. tip::
+            Available permissions are the same than :func:`~aquarium.item.Item.create_permission`
+
+        :returns:   A dict with the {user: participant, edge: the updated permission edge}
+        :rtype:     dict
+        """
+        data = {
+            'userKey': participant_key,
+            'data': {
+                'permissions': permissions
+            },
+            'propagate': propagate
+
+        }
+        result = self.do_request(
+            'PATCH', 'items/{0}/permissions'.format(self._key), data=json.dumps(data))
+        result['user'] = self.parent.cast(result['user'])
+        return result
+
     def get_parents(self):
         """
         Gets the parents of the item
