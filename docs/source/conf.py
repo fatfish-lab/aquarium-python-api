@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('.'))
 # -- Project information -----------------------------------------------------
 
 project = 'Aquarium python package'
-copyright='2022, Fatfish Lab'
+copyright='2023, Fatfish Lab'
 author='Fatfish Lab'
 
 # The full version, including alpha/beta/rc tags
