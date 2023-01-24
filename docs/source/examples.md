@@ -8,6 +8,32 @@ Voici quelques exemple pour réaliser certaines actions spécifiques. N'hésitez
 projects=aq.project.get_all()
 ```
 
+## Créer un dossier dans un projet
+```python
+# projects is defined on the previous example
+project = projects[0]
+reference_folder=project.append(type='Group', data={'name': 'References'})
+```
+
+## Uploader une image dans un dossier
+```python
+# reference_folder is defined on the previous example
+media = reference_folder.item.append(type='Media', path=r"/mnt/project/image.jpg")
+```
+
+## Récupérer les dossiers d'un projet
+```python
+# project is defined on previous example
+
+folders = project.get_children(types="Group")
+```
+
+## Créer un shot dans une séquence
+```python
+sequence_key = 123456
+shot = aq.item(sequence_key).append(type="Shot", data={'name': 's010_p100', frameIn: '101', frameOut: '256'})
+```
+
 ## Récupérer les tâches assignées de l'utilisateur courant
 
 ```python
@@ -43,4 +69,18 @@ En fonction de la structure de votre projet, il pourra être plus performant d'u
 me=aq.get_current_user()
 tasks=me.get_tasks()
 statuses=tasks[0].get_statuses()
+```
+
+## Créer une playlist avec les media uploadés aujourd'hui
+
+```python
+# project is defined on the previous example
+playlist = project.append(type="Playlist", data={'name': 'My playlist'})
+medias = project.traverse(meshql="# -($Child, 5)> $Media AND item.updatedAt > DATE_ROUND(@now, 1, 'day') VIEW item")
+medias = [aq.item(media) for media in medias]
+
+for media in medias:
+    aq.edge.create(type="Child", from_key=playlist.item._key, to_key=media._key)
+
+imported_media = playlist.item.get_medias()
 ```
