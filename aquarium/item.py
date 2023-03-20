@@ -384,19 +384,28 @@ class Item(Entity):
         result['user'] = self.parent.cast(result['user'])
         return result
 
-    def get_parents(self):
+    def get_parents(self, limit = 50, offset = 0):
         """
         Gets the parents of the item
+
+        :param      limit:   Maximum limit of returned items
+        :type       limit:   integer, optional
+        :param      offset:  Number of skipped items. Used for pagination
+        :type       offset:  integer, optional
 
         :returns:   List of item and edge object
         :rtype:     list of {item: :class:`~aquarium.item.Item`, edge: :class:`~aquarium.edge.Edge`}
         """
-        query = "# <($Child)- *"
+        query = "# <($Child)- {offset},{limit} * {view}".format(
+            offset=offset,
+            limit=limit
+        )
+
         result = self.traverse(meshql=query)
         result = [self.parent.element(data) for data in result]
         return result
 
-    def get_children(self, show_hidden=False, types=None, names=None):
+    def get_children(self, show_hidden=False, types=None, names=None, limit=50, offset=0):
         """
         Gets the children of the item
 
@@ -406,11 +415,18 @@ class Item(Entity):
         :type       types:  string or list, optional
         :param      names:  One string or list of string items name you want to filter
         :type       names:  string or list, optional
+        :param      limit:   Maximum limit of returned items
+        :type       limit:   integer, optional
+        :param      offset:  Number of skipped items. Used for pagination
+        :type       offset:  integer, optional
 
         :returns:   List of item and edge object
         :rtype:     list of {item: :class:`~aquarium.item.Item`, edge: :class:`~aquarium.edge.Edge`}
         """
-        query = ["# -($Child)>"]
+        query = ["# -($Child)> {offset}, {limit}".format(
+            offset=offset,
+            limit=limit
+        )]
         aliases = dict()
 
         if types == None:
@@ -426,7 +442,7 @@ class Item(Entity):
             aliases['names'] = names
 
         if not show_hidden:
-            query.append(' AND edge.data.isHidden != true')
+            query.append('AND edge.data.isHidden != true')
 
         result = self.traverse(meshql=' '.join(query), aliases=aliases)
         result = [self.parent.element(data) for data in result]
