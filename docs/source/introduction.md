@@ -26,8 +26,18 @@ aq.connect(AQ_USER, AQ_PASSWORD)
 Si vous voulez permettre à vos utilisateurs de se reconnecter facilement sans avoir besoin de rentrer tous les jours un mot de passe, vous pouvez sauvegarder le token d'authentification. Le token est disponible directement dans la classe Aquarium (ex: `aq.token`). Une fois le token sauvegardé de manière sécurisée, vous pouvez le réutiliser au moment de l'initialisation de la classe Aquarium() :
 
 ```python
-aq=Aquarium('https://your-aquarium-server', token=secured_token)
+aq=Aquarium('https://your-aquarium-server', token=personal_access_token)
 ```
+
+```{admonition} Sécurité
+:class: info
+Si vous avez activé l'authentification à multi-facteur sur votre compte, vous devez générer un token personel d'accès depuis votre profile utilisateur. Il vous suffit ensuite de le passer au moment de l'initialisation de la class Aquarium :
+
+```python
+aq=Aquarium('https://your-aquarium-server', token=personal_access_token)
+```
+
+
 
 ## Les classes Item() et Edge()
 
@@ -44,9 +54,11 @@ Des sous-classes issues de la classe Item() sont également disponibles pour fac
 - Project
 - Shot
 - Task
+- Playlist
 - Template
 - User
 - Usergroup
+- Organisation
 
 Lorsque vous faites une requête, le package va essayé au maximum de vous retourner des instances de classe Item() ou Edge().
 
@@ -72,7 +84,7 @@ Si vous avez toutes les données de l'item (ou d'un edge), vous pouvez utiliser 
 item={
             "_id": "items/1234",
             "_key": "1234",
-            "_rev: "b234553",
+            "_rev": "b234553",
             "type": "Group",
             "data": {
                 "name": "My group"
