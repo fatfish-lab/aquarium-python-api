@@ -38,6 +38,8 @@ class Aquarium(object):
     :type token: string, optional
     :param api_version: Specify the API version you want to use (default : `v1`).
     :type api_version: string, optional
+    :param domain: Specify the domain used for unauthenticated requests. Mainly for Aquarium Fatfish Lab dev or local Aquarium server without DNS
+    :type domain: string, optional
 
     :var token: Get the current token (populated after a first :func:`~aquarium.aquarium.Aquarium.signin`)
     :var edge: Access to Edge class
@@ -66,7 +68,7 @@ class Aquarium(object):
     :vartype utils: :class:`~aquarium.utils.Utils`
     """
 
-    def __init__(self, api_url='', token='', api_version='v1'):
+    def __init__(self, api_url='', token='', api_version='v1', domain=None):
         """
         Constructs a new instance.
         """
@@ -76,6 +78,7 @@ class Aquarium(object):
         self.api_url=api_url
         self.api_version=api_version
         self.token=token
+        self.domain=domain
         # Classes
         self.element=Element(parent=self)
         self.item=Item(parent=self)
@@ -117,6 +120,9 @@ class Aquarium(object):
         else:
             headers=dict(authorization=token)
             headers.update(JSON_CONTENT_TYPE)
+
+        if (self.domain):
+            headers['aquarium-domain'] = self.domain
 
         args=list(args)
         typ=args[0]
