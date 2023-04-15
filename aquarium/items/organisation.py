@@ -127,14 +127,7 @@ class Organisation(Item):
         :rtype:     :class:`~aquarium.items.user.User`
         """
 
-        payload = dict(email=email)
-
-        if name != None:
-            payload['name'] = name
-
-        member = self.do_request(
-            'POST', 'users', data=json.dumps(payload))
-        member = self.parent.cast(member)
+        member = self.parent.create_user(email, name)
 
         self.add_member(member._key)
 
