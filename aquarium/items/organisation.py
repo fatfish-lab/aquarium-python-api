@@ -92,25 +92,52 @@ class Organisation(Item):
         result=[self.parent.user(user) for user in result]
         return result
 
+    def add_member(self, user_key):
+        """
+        Add an existing user in your organisation
+
+        :param      user_key:  The user key of the user to add in the organisation
+        :type       user_key:  string
+
+        :returns:   User object
+        :rtype:     :class:`~aquarium.items.user.User`
+        """
+
+        payload = dict(userKey=user_key)
+
+        member = self.do_request(
+            'POST', 'organisations/{organisationKey}/members'.format(
+                organisationKey=self._key
+            ), data=json.dumps(payload))
+
+        member = self.parent.cast(member)
+
+        return member
+
     def create_member(self, email, name=None):
         """
         Create a new member in your organisation
 
         :param      email:  The email of the new member
         :type       email:  string
-        :param      name:  The name of the new member
-        :type       name:  string, optional
+        :param      name:   The name of the new member
+        :type       name:   string, optional
 
         :returns:   User object
         :rtype:     :class:`~aquarium.items.user.User`
         """
 
-        payload = dict(email=email, name=name)
-        data = dict(data=payload)
-        member = self.do_request(
-            'POST', 'organisations/{0}/createMember'.format(self._key), data=json.dumps(data))
+        payload = dict(email=email)
 
+        if name != None:
+            payload['name'] = name
+
+        member = self.do_request(
+            'POST', 'users', data=json.dumps(payload))
         member = self.parent.cast(member)
+
+        self.add_member(member._key)
+
         return member
 
     def get_suborganisations(self, limit=200, offset=None):

@@ -265,6 +265,52 @@ class Aquarium(object):
         result=self.do_request('GET', 'status')
         return result
 
+    def ping (self):
+        """
+        Ping Aquarium server
+
+        :returns: Ping response: pong
+        :rtype:   string
+        """
+        ping = self.do_request('GET', 'ping', decoding=False)
+        return ping.text
+
+    def get_users (self):
+        """
+        Get all users
+
+        :returns: List of all users
+        :rtype:   List of :class:`~aquarium.items.user.User`
+        """
+
+        users = self.do_request('GET', 'users')
+
+        users = [self.cast(user) for user in users]
+        return users
+
+    def create_user (self, email, name=None):
+        """
+        Create a new user
+
+        :param      email:  The email of the new user
+        :type       email:  string
+        :param      name:   The name of the new user
+        :type       name:   string, optional
+
+        :returns:   User object
+        :rtype:     :class:`~aquarium.items.user.User`
+        """
+
+        payload = dict(email=email)
+        if name != None:
+            payload['name'] = name
+
+        user = self.do_request(
+            'POST', 'users', data=json.dumps(payload))
+
+        user = self.cast(user)
+        return user
+
     def upload_file(self, path=''):
         """
         Uploads a file on the server

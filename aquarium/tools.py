@@ -4,7 +4,7 @@ import logging
 logger=logging.getLogger(__name__)
 from .exceptions import RequestError, AuthentificationError,\
                         AutorisationError, PathNotFoundError, \
-                        ConflictError, UploadExceedLimit, InternalError
+                        MethodNotAllowed, ConflictError, UploadExceedLimit, InternalError
 
 def pretty_print_format(data={}, indent=8, width=80, depth=10):
     dict_string=pprint.pformat(data, indent=indent, width=width, depth=depth)
@@ -47,6 +47,8 @@ def evaluate(response=None):
         raise AutorisationError(response)
     elif status_code==404:
         raise PathNotFoundError(response)
+    elif status_code==405:
+        raise MethodNotAllowed(response)
     elif status_code==409:
         raise ConflictError(response)
     elif status_code==413:

@@ -5,6 +5,7 @@ import re
 import os
 from .tools import to_string_url
 from .entity import Entity
+from .exceptions import Deprecated
 import logging
 logger = logging.getLogger(__name__)
 
@@ -118,6 +119,25 @@ class Item(Entity):
             'POST', 'items/'+self._key+'/traverse', data=json.dumps(data))
         return result
 
+    def traverse_trashed(self, meshql='', aliases={}):
+        """
+        Execute a traverse from the current item on trashed_items
+
+        :param      meshql:        The meshql string
+        :type       meshql:        string
+        :param      aliases:       The aliases used in the meshql query
+        :type       aliases:       dictionary, optional
+
+        :returns:   List of item and/or edge or VIEW used in the meshql query
+        :rtype:     list
+        """
+        logger.debug('Send traverse trashed_items : meshql : %s / aliases : %r',
+                     meshql, aliases)
+        data = dict(query=meshql, aliases=aliases)
+        result = self.do_request(
+            'POST', 'trashed_items/'+self._key+'/traverse', data=json.dumps(data))
+        return result
+
     def replace_data(self, data={}):
         """
         Replace the item data with new ones
@@ -210,16 +230,25 @@ class Item(Entity):
         result = self.parent.cast(result)
         return result
 
-    def reapply_template(self, template_key=''):
+    def reapply_template(self, template_key=None):
         """
-        Re-apply the template previously used
+        Re-apply the specific template
+
+        :param      template_key:   The key of the template to re-apply
+        :type       template_key:   string
 
         :returns:   Item object
         :rtype:     :class:`~aquarium.item.Item` or subclass : :class:`~aquarium.items.asset.Asset` | :class:`~aquarium.items.project.Project` | :class:`~aquarium.items.shot.Shot` | :class:`~aquarium.items.task.Task` | :class:`~aquarium.items.template.Template` | :class:`~aquarium.items.user.User` | :class:`~aquarium.items.usergroup.Usergroup`
         """
-        logger.debug('Re-apply existing template on item %s', self._key)
+        if template_key == None:
+            raise Deprecated("You can't use this function without providing the template_key you want to use.")
+
+        logger.debug('Re-apply template %s on item %s', template_key, self._key)
         result = self.do_request(
-            'POST', 'items/' + self._key + '/template/reapply')
+            'POST', 'templates/{templateKey}/sync/{itemKey}'.format(
+                templateKey=template_key,
+                itemKey=self._key
+            ))
         result = self.parent.cast(result)
         return result
 
@@ -240,9 +269,9 @@ class Item(Entity):
         result = self.parent.cast(result)
         return result
 
-    def get_versions(self, populate=False):
+    def get_history(self, populate=False):
         """
-        Get the previous item's data versions
+        Get the previous item's data history
 
         :param      populate:  Populate `item.createdBy` and `item.updatedBy` with User object
         :type       populate:  boolean, optional
@@ -251,9 +280,15 @@ class Item(Entity):
         :rtype:     list
         """
         result = self.do_request(
-            'GET', 'items/{0}/versions?populate={1}'.format(self._key, to_string_url(populate)))
+            'GET', 'items/{0}/history?populate={1}'.format(self._key, to_string_url(populate)))
         result = [self.parent.cast(data) for data in result]
         return result
+
+    def get_versions(self, populate=False):
+        """
+        Alias of :func:`~aquarium.items.item.get_history`
+        """
+        return self.get_history(self, populate)
 
     def get_shortest_path(self, key=''):
         """
@@ -396,7 +431,7 @@ class Item(Entity):
         :returns:   List of item and edge object
         :rtype:     list of {item: :class:`~aquarium.item.Item`, edge: :class:`~aquarium.edge.Edge`}
         """
-        query = "# <($Child)- {offset},{limit} * {view}".format(
+        query = "# <($Child)- {offset},{limit} *".format(
             offset=offset,
             limit=limit
         )
@@ -448,16 +483,18 @@ class Item(Entity):
         result = [self.parent.element(data) for data in result]
         return result
 
-    def get_trash(self):
+    def get_trash(self, meshql='# -($Child)> *'):
         """
         Gets the trashed items
+
+        :param      meshql:  The meshql string. Default is "# -($Child)> *"
+        :type       meshql:  string, optional
 
         :returns:   List of trashed item and edge object
         :rtype:     list of {item: :class:`~aquarium.item.Item`, edge: :class:`~aquarium.edge.Edge`}
         """
-        query = '# -($Trash)> *'
-        result = self.traverse(meshql=query)
-        result = [self.parent.cast(data['item']) for data in result]
+        result = self.traverse_trashed(meshql)
+        result = [self.parent.element(data) for data in result]
         return result
 
     def move(self, old_parent_key=None, new_parent_key=None):
@@ -484,37 +521,33 @@ class Item(Entity):
         result = self.parent.element(result)
         return result
 
-    def trash(self, parent_key=''):
+    def trash(self):
         """
-        Move item from parent item to trash
-
-        :param      parent_key:  The key of the parent
-        :type       parent_key:  string
+        Move item to the trash
 
         :returns:   Trashed item
         :rtype:     dictionary
         """
-        logger.debug('Trash item %s from parent %s', self._key, parent_key)
-        data = dict(itemKey=self._key)
+        logger.debug('Trash item %s', self._key)
         result = self.do_request(
-            'POST', 'items/'+parent_key+'/trash', data=json.dumps(data))
+            'POST', 'items/{itemKey}/trash'.format(
+                itemKey=self._key
+            ))
         result = self.parent.element(result)
         return result
 
-    def restore(self, parent_key=''):
+    def restore(self):
         """
-        Restore an item from trash to parent item
+        Restore an item from trash
 
-        :param      parent_key:  The key of the parent
-        :type       parent_key:  string
-
-        :returns:   Restored edge
-        :rtype:     :class:`~aquarium.edge.Edge`
+        :returns:   Restored item
+        :rtype:     :class:`~aquarium.item.Item`
         """
-        logger.debug('Restore item %s from parent %s', self._key, parent_key)
-        data = dict(itemKey=self._key)
+        logger.debug('Restore item %s', self._key)
         result = self.do_request(
-            'POST', 'items/'+parent_key+'/restore', data=json.dumps(data))
+            'POST', 'trashed_items/{itemKey}/restore'.format(
+                itemKey=self._key
+            ))
         result = self.parent.cast(result)
         return result
 
