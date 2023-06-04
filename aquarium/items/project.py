@@ -18,12 +18,12 @@ class Project(Item):
         :rtype:     List of :class:`~aquarium.items.project.Project`
         """
         query = list()
-        query.append('# ($Project')
+        query.append('# $Project')
 
         if not show_all:
-            query.append('AND item.data.completion != 1 AND NOT <($Trash)- *)')
+            query.append('AND item.data.completion != 1 AND item.data.completion != -1 AND NOT (<($Trash)- *)')
 
-        query.append(') SORT item.data.name ASC')
+        query.append('SORT item.data.name ASC')
         result = self.parent.query(meshql=' '.join(query))
         result = [self.parent.cast(data) for data in result]
         return result
