@@ -309,13 +309,26 @@ class Item(Entity):
     def get_permissions(self, sort=None, populate=False, offset=0, limit=50, depth=1, includeMembers=False):
         """
         Gets the permissions of the item
-
-
+sort=None, populate=False, offset=0, limit=50, depth=1, includeMembers=False
+        :param      sort:  Sort participants with a meshQL expression. Example: 'item.data.name ASC'
+        :type       sort:  boolean, optional
         :param      populate:  Populate with User object
         :type       populate:  boolean, optional
+        :param      offset:  Number of skipped items. Used for pagination
+        :type       offset:  integer, optional
+        :param      limit:  Maximum limit of returned items
+        :type       limit:  integer, optional
+        :param      depth:  Get deeper participants.
+        :type       depth:  integer, optional
+        :param      includeMembers:  Include members of the current item
+        :type       includeMembers:  boolean, optional
 
         :returns:   List of edge and user
         :rtype:     list
+
+        .. warning::
+            We are improving the behavior of depth and includeMembers parameters.
+            Feel free to reach our support if you have any questions.
         """
         params = dict(
             populate=populate,
