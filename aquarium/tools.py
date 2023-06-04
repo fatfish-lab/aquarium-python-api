@@ -59,3 +59,16 @@ def evaluate(response=None):
         raise RuntimeError('code {0} : {1} url:{2}'.format(
             status_code, response, url))
 
+def jsonify(dictionnary):
+    """
+    Convert dict to a json object
+
+    :param      dictionnary:        The dict
+    :type       dictionnary:        dict object
+
+    :returns:   Update directly the dict
+    :rtype:     None
+    """
+    for key, value in dictionnary.items():
+        if isinstance(value, bool):
+            dictionnary[key] = str(value).lower()

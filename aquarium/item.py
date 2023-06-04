@@ -4,6 +4,7 @@ import json
 import re
 import os
 from .tools import to_string_url
+from .tools import jsonify
 from .entity import Entity
 from .exceptions import Deprecated
 import logging
@@ -305,20 +306,32 @@ class Item(Entity):
         result = [self.parent.cast(data) for data in result]
         return result
 
-    def get_permissions(self, filters={}, populate=False):
+    def get_permissions(self, sort=None, populate=False, offset=0, limit=50, depth=1, includeMembers=False):
         """
         Gets the permissions of the item
 
-        :param      filters:   The filters
-        :type       filters:   dictionary, optional
+
         :param      populate:  Populate with User object
         :type       populate:  boolean, optional
 
         :returns:   List of edge and user
         :rtype:     list
         """
-        result = self.do_request('GET', 'items/{0}/permissions?filters={1}&populate={2}'.format(
-            self._key, str(filters).replace("'", '"'), to_string_url(populate)), headers=URL_CONTENT_TYPE)
+        params = dict(
+            populate=populate,
+            offset=offset,
+            limit=limit,
+            depth=depth,
+            includeMembers=includeMembers
+        )
+
+        if sort != None:
+            params['sort'] = sort
+
+        jsonify(params)
+
+        result = self.do_request('GET', 'items/{0}/permissions'.format(
+            self._key), params=params)
         result = [self.parent.element(data) for data in result]
         return result
 
