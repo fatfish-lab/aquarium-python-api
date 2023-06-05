@@ -7,6 +7,7 @@ from .tools import to_string_url
 from .tools import jsonify
 from .entity import Entity
 from .exceptions import Deprecated
+import mimetypes
 import logging
 logger = logging.getLogger(__name__)
 
@@ -613,14 +614,18 @@ sort=None, populate=False, offset=0, limit=50, depth=1, includeMembers=False
         """
         logger.debug('Upload file %s on item %s with data %s', path, self._key, data)
 
+        file = open(path, 'rb')
+        filename = os.path.basename(path)
+        file_content_type = mimetypes.guess_type(filename)
+
         files = dict(
-            file=open(path, 'rb'),
+            file=(filename, file, file_content_type),
             data=(None, json.dumps(data), 'text/plain'),
             message=(None, message, 'text/plain')
         )
         result = self.do_request(
-            'POST', 'items/'+self._key+'/upload', headers={'Content-Type': None}, files=files)
-        files['file'].close()
+            'POST', 'items/'+self._key+'/upload', files=files)
+        file.close()
         result = self.parent.cast(result)
         return result
 
