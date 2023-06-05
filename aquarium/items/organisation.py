@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import json
 from ..item import Item
 
 
@@ -108,7 +107,7 @@ class Organisation(Item):
         member = self.do_request(
             'POST', 'organisations/{organisationKey}/members'.format(
                 organisationKey=self._key
-            ), data=json.dumps(payload))
+            ), json=payload)
 
         member = self.parent.cast(member)
 

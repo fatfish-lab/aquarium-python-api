@@ -310,7 +310,7 @@ class Aquarium(object):
             payload['name'] = name
 
         user = self.do_request(
-            'POST', 'users', data=json.dumps(payload))
+            'POST', 'users', json=payload)
 
         user = self.cast(user)
         return user
@@ -358,7 +358,7 @@ class Aquarium(object):
         logger.debug('Send query : meshql : %s / aliases : %r',
                      meshql, aliases)
         data=dict(query=meshql, aliases=aliases)
-        result=self.do_request('POST', 'query', data=json.dumps(data))
+        result=self.do_request('POST', 'query', json=data)
         return result
 
     def get_file(self, file_path):

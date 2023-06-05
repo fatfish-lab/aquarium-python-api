@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import json
 from .tools import to_string_url
 from .entity import Entity
 
@@ -44,7 +43,7 @@ class Edge(Entity):
                        type=type,
                        data=data)
 
-        result = self.do_request('POST', 'edges', data=json.dumps(payload))
+        result = self.do_request('POST', 'edges', json=payload)
         result = self.parent.cast(result)
         return result
 
@@ -64,7 +63,7 @@ class Edge(Entity):
         """
         data = dict(data=data)
         result = self.do_request(
-            'PUT', 'edges/'+self._key, data=json.dumps(data))
+            'PUT', 'edges/'+self._key, json=data)
         result = self.parent.cast(result)
         return result
 
@@ -80,7 +79,7 @@ class Edge(Entity):
         """
         data = dict(data=data)
         result = self.do_request(
-            'PATCH', 'edges/'+self._key, data=json.dumps(data))
+            'PATCH', 'edges/'+self._key, json=data)
         result = self.parent.cast(result)
         return result
 

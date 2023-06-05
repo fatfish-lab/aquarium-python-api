@@ -38,7 +38,7 @@ class Item(Entity):
         """
 
         payload = dict(type=type, data=data)
-        result = self.do_request('POST', 'items', data=json.dumps(payload))
+        result = self.do_request('POST', 'items', json=payload)
         result = self.parent.cast(result)
 
         if path != None:
@@ -89,7 +89,7 @@ class Item(Entity):
             payload["templateKey"] = template_key
 
         result = self.do_request(
-            'POST', 'items/'+self._key+'/append', data=json.dumps(payload))
+            'POST', 'items/'+self._key+'/append', json=payload)
         result = self.parent.element(result)
 
         if path != None:
@@ -116,7 +116,7 @@ class Item(Entity):
                      meshql, aliases)
         data = dict(query=meshql, aliases=aliases)
         result = self.do_request(
-            'POST', 'items/'+self._key+'/traverse', data=json.dumps(data))
+            'POST', 'items/'+self._key+'/traverse', json=data)
         return result
 
     def traverse_trashed(self, meshql='', aliases={}):
@@ -135,7 +135,7 @@ class Item(Entity):
                      meshql, aliases)
         data = dict(query=meshql, aliases=aliases)
         result = self.do_request(
-            'POST', 'trashed_items/'+self._key+'/traverse', data=json.dumps(data))
+            'POST', 'trashed_items/'+self._key+'/traverse', json=data)
         return result
 
     def replace_data(self, data={}):
@@ -155,7 +155,7 @@ class Item(Entity):
         logger.debug('Replacing data on item %s with %r', self._key, data)
         data = dict(data=data)
         result = self.do_request(
-            'PUT', 'items/'+self._key, data=json.dumps(data))
+            'PUT', 'items/'+self._key, json=data)
 
         result = self.parent.cast(result)
         return result
@@ -173,7 +173,7 @@ class Item(Entity):
         logger.debug('Updating data on item %s with %r', self._key, data)
         data = dict(data=data)
         result = self.do_request(
-            'PATCH', 'items/'+self._key, data=json.dumps(data))
+            'PATCH', 'items/'+self._key, json=data)
         result = self.parent.cast(result)
         return result
 
@@ -190,7 +190,7 @@ class Item(Entity):
         logger.debug('Copy item %s into %s', self._key, parent_key)
         data = dict(targetKey=parent_key)
         result = self.do_request(
-            'POST', 'items/'+self._key+'/copy', data=json.dumps(data))
+            'POST', 'items/'+self._key+'/copy', json=data)
 
         result = [self.parent.cast(data) for data in result]
         return result
@@ -209,7 +209,7 @@ class Item(Entity):
                      self._key, parent_key)
         data = dict(parentKey=parent_key)
         result = self.do_request(
-            'POST', 'items/'+self._key+'/convertToTemplate', data=json.dumps(data))
+            'POST', 'items/'+self._key+'/convertToTemplate', json=data)
         result = self.parent.cast(result)
         return result
 
@@ -226,7 +226,7 @@ class Item(Entity):
         logger.debug('Apply template %s on item %s', template_key, self._key)
         data = dict(templateKey=template_key)
         result = self.do_request(
-            'POST', 'items/'+self._key+'/template', data=json.dumps(data))
+            'POST', 'items/'+self._key+'/template', json=data)
         result = self.parent.cast(result)
         return result
 
@@ -406,7 +406,7 @@ class Item(Entity):
             'propagate': propagate
         }
         result = self.do_request(
-            'POST', 'items/{0}/permissions'.format(self._key), data=json.dumps(data))
+            'POST', 'items/{0}/permissions'.format(self._key), json=data)
         result['user'] = self.parent.cast(result['user'])
         return result
 
@@ -424,7 +424,7 @@ class Item(Entity):
             'userKey': participant_key
         }
         result = self.do_request(
-            'DELETE', 'items/{0}/permissions'.format(self._key), data=json.dumps(data))
+            'DELETE', 'items/{0}/permissions'.format(self._key), json=data)
         result['user'] = self.parent.cast(result['user'])
         return result
 
@@ -454,7 +454,7 @@ class Item(Entity):
 
         }
         result = self.do_request(
-            'PATCH', 'items/{0}/permissions'.format(self._key), data=json.dumps(data))
+            'PATCH', 'items/{0}/permissions'.format(self._key), json=data)
         result['user'] = self.parent.cast(result['user'])
         return result
 
@@ -556,7 +556,7 @@ class Item(Entity):
         )
 
         result = self.do_request(
-            'PUT', 'items/'+self._key+'/move', data=json.dumps(data))
+            'PUT', 'items/'+self._key+'/move', json=data)
         result = self.parent.element(result)
         return result
 
@@ -683,7 +683,7 @@ class Item(Entity):
         :rtype:     dictionary
         """
         result = self.do_request(
-            'POST', 'items/'+self._key+'/import/json', data=json.dumps(content))
+            'POST', 'items/'+self._key+'/import/json', json=content)
         return result
 
     def export_json(self):
