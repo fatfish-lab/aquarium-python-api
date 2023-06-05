@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import os
+import mimetypes
+
 from .auth import AquariumAuth
 from .item import Item
 from .edge import Edge
@@ -327,9 +330,14 @@ class Aquarium(object):
         :rtype:     dictionary
         """
         logger.debug('Upload file : %s', path)
-        files=dict(file=open(path, 'rb'))
-        result = self.do_request('POST', 'upload', headers={'Content-Type': None}, files=files)
-        files['file'].close()
+
+        file = open(path, 'rb')
+        filename = os.path.basename(path)
+        file_content_type = mimetypes.guess_type(filename)
+
+        files=dict(file=(filename, file, file_content_type))
+        result = self.do_request('POST', 'upload', files=files)
+        file.close()
         return result
 
     def query(self, meshql='', aliases={}):
