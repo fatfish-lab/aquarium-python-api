@@ -10,6 +10,16 @@ class User(Item):
     This class describes an User object child of Item class.
     """
 
+    def set_data_variables(self, data={}):
+        """
+        Sets the data variables of the User
+
+        :param      data:  The object item from Aquarium API
+        :type       data:  dictionary
+        """
+        super(Item, self).set_data_variables(data=data)
+        self.active = data.get('active', False)
+
     def signin(self, email='', password=''):
         """
         Sign in a user with it's email and password
