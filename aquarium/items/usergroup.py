@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-from .. import URL_CONTENT_TYPE
 from ..item import Item
 import logging
 logger = logging.getLogger(__name__)
@@ -19,7 +18,7 @@ class Usergroup(Item):
         :rtype:     List of :class:`~aquarium.items.user.User`
         """
         result = self.do_request(
-            'GET', 'usergroups/'+self._key, headers=URL_CONTENT_TYPE)
+            'GET', 'usergroups/'+self._key)
 
         result = [self.parent.cast(data) for data in result]
         return result

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from .. import URL_CONTENT_TYPE
 from ..item import Item
 from ..element import Element
 import logging
@@ -27,7 +26,7 @@ class User(Item):
         # Authenticate and retrieve the access token
         payload = dict(email=email, password=password)
         result = self.do_request(
-            'POST', 'signin', headers=URL_CONTENT_TYPE, data=payload)
+            'POST', 'signin', data=payload)
 
        # Store authentification information
         token = result.pop("token")
