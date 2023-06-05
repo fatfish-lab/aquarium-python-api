@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-from . import URL_CONTENT_TYPE
 import json
 import re
 import os
-from .tools import to_string_url
 from .tools import jsonify
 from .entity import Entity
 from .exceptions import Deprecated
@@ -317,14 +315,18 @@ class Item(Entity):
         :rtype:     list of :class:`~aquarium.item.Item` or subclass : :class:`~aquarium.items.asset.Asset` | :class:`~aquarium.items.project.Project` | :class:`~aquarium.items.shot.Shot` | :class:`~aquarium.items.task.Task` | :class:`~aquarium.items.template.Template` | :class:`~aquarium.items.user.User` | :class:`~aquarium.items.usergroup.Usergroup`
         """
         result = self.do_request(
-            'GET', 'items/'+self._key+'/path/'+key, headers=URL_CONTENT_TYPE)
+            'GET', 'items/'+self._key+'/path/'+key)
         result = [self.parent.cast(data) for data in result]
         return result
 
     def get_permissions(self, sort=None, populate=False, offset=0, limit=50, depth=1, includeMembers=False):
         """
         Gets the permissions of the item
-sort=None, populate=False, offset=0, limit=50, depth=1, includeMembers=False
+
+        .. warning::
+            We are improving the behavior of depth and includeMembers parameters.
+            Feel free to reach our support if you have any questions.
+
         :param      sort:  Sort participants with a meshQL expression. Example: 'item.data.name ASC'
         :type       sort:  boolean, optional
         :param      populate:  Populate with User object
@@ -340,10 +342,6 @@ sort=None, populate=False, offset=0, limit=50, depth=1, includeMembers=False
 
         :returns:   List of edge and user
         :rtype:     list
-
-        .. warning::
-            We are improving the behavior of depth and includeMembers parameters.
-            Feel free to reach our support if you have any questions.
         """
         params = dict(
             populate=populate,
@@ -528,7 +526,7 @@ sort=None, populate=False, offset=0, limit=50, depth=1, includeMembers=False
         """
         Gets the trashed items
 
-        :param      meshql:  The meshql string. Default is "# -($Child)> *"
+        :param      meshql:  The meshql string. Default is : # -($Child)> *
         :type       meshql:  string, optional
 
         :returns:   List of trashed item and edge object
@@ -604,7 +602,7 @@ sort=None, populate=False, offset=0, limit=50, depth=1, includeMembers=False
         """
         logger.debug('Delete item %s', self._key)
         result = self.do_request(
-            'DELETE', 'items/'+self._key, headers=URL_CONTENT_TYPE)
+            'DELETE', 'items/'+self._key)
         return result
 
     def upload_file(self, path='', data = {}, message = None):
@@ -659,7 +657,7 @@ sort=None, populate=False, offset=0, limit=50, depth=1, includeMembers=False
             url = '{url}?versionKey=${versionKey}'.format(versionKey=versionKey)
 
         result = self.do_request(
-            'GET', url, headers=URL_CONTENT_TYPE, decoding=False)
+            'GET', url, decoding=False)
 
         if (os.path.isdir(path)):
             content_disposition = result.headers['content-disposition']
