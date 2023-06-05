@@ -289,8 +289,14 @@ class Item(Entity):
         :returns:   The versions values
         :rtype:     list
         """
+        params = {
+            'populate': populate
+        }
+
+        jsonify(params)
+
         result = self.do_request(
-            'GET', 'items/{0}/history?populate={1}'.format(self._key, to_string_url(populate)))
+            'GET', 'items/{0}/history'.format(self._key), params=params)
         result = [self.parent.cast(data) for data in result]
         return result
 
