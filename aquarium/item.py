@@ -254,20 +254,28 @@ class Item(Entity):
         result = self.parent.cast(result)
         return result
 
-    def get(self, populate=False, versions=False):
+    def get(self, populate=False, history=False):
         """
         Get item object with its _key
 
         :param      populate:  Populate `item.createdBy` and `item.updatedBy` with User object
         :type       populate:  boolean
-        :param      versions:  Get previous item's data versions
-        :type       versions:  boolean, optional
+        :param      history:   Get previous item's data history
+        :type       history:   boolean, optional
 
         :returns:   Item object
         :rtype:     :class:`~aquarium.item.Item` or subclass : :class:`~aquarium.items.asset.Asset` | :class:`~aquarium.items.project.Project` | :class:`~aquarium.items.shot.Shot` | :class:`~aquarium.items.task.Task` | :class:`~aquarium.items.template.Template` | :class:`~aquarium.items.user.User` | :class:`~aquarium.items.usergroup.Usergroup`
         """
-        result = self.do_request('GET', 'items/{0}/?populate={1}&versions={2}'.format(
-            self._key, int(populate), int(versions)), headers=URL_CONTENT_TYPE)
+
+        params = {
+            'populate': populate,
+            'history': history
+        }
+
+        jsonify(params)
+
+        result = self.do_request('GET', 'items/{0}/'.format(
+            self._key), params=params)
         result = self.parent.cast(result)
         return result
 
