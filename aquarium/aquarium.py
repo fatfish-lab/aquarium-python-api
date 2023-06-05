@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from . import JSON_CONTENT_TYPE
+from .auth import AquariumAuth
 from .item import Item
 from .edge import Edge
 from .tools import evaluate
@@ -79,6 +79,7 @@ class Aquarium(object):
         self.api_version=api_version
         self.token=token
         self.domain=domain
+
         # Classes
         self.element=Element(parent=self)
         self.item=Item(parent=self)
@@ -113,16 +114,11 @@ class Aquarium(object):
         if 'decoding' in kwargs:
             decoding=kwargs.pop('decoding')
 
+        headers=None
         if 'headers' in kwargs:
             headers=kwargs.pop('headers')
             if headers is not None:
                 headers.update(dict(authorization=token))
-        else:
-            headers=dict(authorization=token)
-            headers.update(JSON_CONTENT_TYPE)
-
-        if (self.domain):
-            headers['aquarium-domain'] = self.domain
 
         args=list(args)
         typ=args[0]
@@ -141,8 +137,7 @@ class Aquarium(object):
             path = urljoin(path, self.api_version)
 
         logger.debug('Send request : %s %s', typ, path)
-        self.session.headers.update(headers)
-        response=self.session.request(typ, path, **kwargs)
+        response=self.session.request(typ, path, headers=headers, auth=AquariumAuth(self.token, self.domain), **kwargs)
         evaluate(response)
         if decoding:
             response=response.json()
