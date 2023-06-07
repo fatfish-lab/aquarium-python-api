@@ -67,17 +67,22 @@ class Edge(Entity):
         result = self.parent.cast(result)
         return result
 
-    def update_data(self, data={}):
+    def update_data(self, data={}, deep_merge=True):
         """
         Update the edge data by merging the existing ones with the new ones
 
-        :param      data:  The new edge data
-        :type       data:  dictionary
+        :param      data:        The new edge data
+        :type       data:        dictionary
+        :param      deep_merge:  Merge nested objects
+        :type       deep_merge:  boolean, optional
 
         :returns:   Edge object
         :rtype:     :class:`~aquarium.edge.Edge`
         """
-        data = dict(data=data)
+        data = dict(
+            data=data,
+            deepMerge=deep_merge
+        )
         result = self.do_request(
             'PATCH', 'edges/'+self._key, json=data)
         result = self.parent.cast(result)
