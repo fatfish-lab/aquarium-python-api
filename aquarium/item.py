@@ -574,7 +574,7 @@ class Item(Entity):
         """
         logger.debug('Trash item %s', self._key)
         result = self.do_request(
-            'POST', 'items/{itemKey}/trash'.format(
+            'DELETE', 'items/{itemKey}/trash'.format(
                 itemKey=self._key
             ))
         result = self.parent.element(result)
@@ -607,7 +607,7 @@ class Item(Entity):
         """
         logger.debug('Delete item %s', self._key)
         result = self.do_request(
-            'DELETE', 'items/'+self._key)
+            'DELETE', 'trashed_items/'+self._key)
         return result
 
     def upload_file(self, path='', data = {}, message = None):
