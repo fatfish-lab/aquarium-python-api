@@ -189,7 +189,7 @@ class User(Item):
         Return user admin status (None, 'admin' or 'super admin')
 
         :returns: Admin status of the user
-        :rtypes: None or 'admin' or 'super admin'
+        :rtype: None or 'admin' or 'super admin'
         """
 
         status = None
