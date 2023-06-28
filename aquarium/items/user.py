@@ -129,3 +129,83 @@ class User(Item):
         result = self.traverse(meshql=' '.join(query))
         result = [self.parent.element(data) for data in result]
         return result
+
+    def promote_as_admin(self):
+        """
+        Promote the user as admin.
+
+        .. tip::
+            Admin users can
+                - administrate items
+                - access administrative panel
+
+        :returns:   Membership edge object
+        :rtype:     dict
+        """
+
+        domain = self.parent.usergroup('domain')
+        domain.add_user(self._key)
+
+    def promote_as_super_admin(self):
+        """
+        Promote the user as super admin.
+
+        .. tip::
+            Super admin users can
+                - add/remove licenses, users and files
+                - administrate items
+                - access administrative panel
+
+        :returns:   A dict with the {user: participant, edge: the created permission edge}
+        :rtype:     dict
+        """
+
+        domain = self.parent.usergroup('domain')
+
+        try:
+            domain.add_user(self._key)
+        except:
+            pass
+
+        return domain.create_permission(self._key, 'rwsadtlug', False)
+
+    def demote(self):
+        """
+        Remove admin and super admin privilege.
+
+        :returns:   None
+        """
+
+        domain = self.parent.usergroup('domain')
+
+        try:
+            domain.remove_user(self._key)
+            domain.remove_participant(self._key)
+        except:
+            pass
+
+    def get_admin_status(self):
+        """
+        Return user admin status (None, 'admin' or 'super admin')
+
+        :returns: Admin status of the user
+        :rtypes: None or 'admin' or 'super admin'
+        """
+
+        status = None
+
+        domain = self.parent.usergroup('domain')
+        members = domain.get_users()
+
+        if (any([m for m in members if m._key == self._key])):
+                status = 'admin'
+
+        if status is not None:
+            domain_permissions = domain.get_permissions()
+            if (any([p for p in domain_permissions if p.user._key == self._key])):
+                status = 'super_admin'
+
+
+        return status
+
+
