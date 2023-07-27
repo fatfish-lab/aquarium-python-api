@@ -328,10 +328,6 @@ class Item(Entity):
         """
         Gets the permissions of the item
 
-        .. warning::
-            We are improving the behavior of depth and includeMembers parameters.
-            Feel free to reach our support if you have any questions.
-
         :param      sort:  Sort participants with a meshQL expression. Example: 'item.data.name ASC'
         :type       sort:  boolean, optional
         :param      populate:  Populate with User object
@@ -340,8 +336,6 @@ class Item(Entity):
         :type       offset:  integer, optional
         :param      limit:  Maximum limit of returned items
         :type       limit:  integer, optional
-        :param      depth:  Get deeper participants.
-        :type       depth:  integer, optional
         :param      includeMembers:  Include members of the current item
         :type       includeMembers:  boolean, optional
 
@@ -352,7 +346,6 @@ class Item(Entity):
             populate=populate,
             offset=offset,
             limit=limit,
-            depth=depth,
             includeMembers=includeMembers
         )
 
