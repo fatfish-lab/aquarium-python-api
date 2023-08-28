@@ -10,7 +10,16 @@ class Error(Exception):
                     response.headers['allowed']
                 )
             else:
-                error=response.json().get('error')
+                try:
+                    responseJson = response.json()
+                    if ('error' in responseJson):
+                        error=responseJson.get('error')
+                    else:
+                        error = response.text
+
+                except:
+                    error=response.text
+
             super(Error, self).__init__('{0} - url:{1}'.format(error, url))
 
 #400
