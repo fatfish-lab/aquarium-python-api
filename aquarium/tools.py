@@ -36,6 +36,7 @@ def evaluate(response=None):
     """
     status_code=response.status_code
     url=response.url
+    text=response.text
     logger.debug('Evaluate request response : status_code : %s / url : %s', status_code, url)
     if status_code == 200:
         return True
@@ -56,8 +57,11 @@ def evaluate(response=None):
     elif status_code==500:
         raise InternalError(response)
     else:
-        raise RuntimeError('code {0} : {1} url:{2}'.format(
-            status_code, response, url))
+        raise RuntimeError('code {status_code} | url:{url} | {content}'.format(
+            status_code=status_code,
+            content=text,
+            url=url
+        ))
 
 def jsonify(dictionnary):
     """
