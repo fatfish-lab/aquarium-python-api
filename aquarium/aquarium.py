@@ -292,7 +292,7 @@ class Aquarium(object):
         users = [self.cast(user) for user in users]
         return users
 
-    def create_user (self, email, name=None):
+    def create_user (self, email, name=None, aquarium_url=None):
         """
         Create a new user
 
@@ -300,6 +300,8 @@ class Aquarium(object):
         :type       email:  string
         :param      name:   The name of the new user
         :type       name:   string, optional
+        :param      aquarium_url: The Aquarium Studio interface url. Useful if API url is not the same as Aquarium Studio interface.
+        :type       aquarium_url: string, optional (default is api_url used during module initialisation)
 
         :returns:   User object
         :rtype:     :class:`~aquarium.items.user.User`
@@ -309,8 +311,12 @@ class Aquarium(object):
         if name != None:
             payload['name'] = name
 
+        headers = {
+            'origin': aquarium_url or self.api_url
+        }
+
         user = self.do_request(
-            'POST', 'users', json=payload)
+            'POST', 'users', json=payload, headers=headers)
 
         user = self.cast(user)
         return user

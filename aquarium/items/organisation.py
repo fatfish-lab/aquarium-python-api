@@ -113,20 +113,22 @@ class Organisation(Item):
 
         return member
 
-    def create_member(self, email, name=None):
+    def create_member(self, email, name=None, aquarium_url=None):
         """
         Create a new member in your organisation
 
-        :param      email:  The email of the new member
-        :type       email:  string
-        :param      name:   The name of the new member
-        :type       name:   string, optional
+        :param      email:        The email of the new member
+        :type       email:        string
+        :param      name:         The name of the new member
+        :type       name:         string, optional
+        :param      aquarium_url: The Aquarium Studio interface url. Useful if API url is not the same as Aquarium Studio interface.
+        :type       aquarium_url: string, optional (default is api_url used during module initialisation)
 
         :returns:   User object
         :rtype:     :class:`~aquarium.items.user.User`
         """
 
-        member = self.parent.create_user(email, name)
+        member = self.parent.create_user(email, name, aquarium_url)
 
         self.add_member(member._key)
 
