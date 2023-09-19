@@ -321,6 +321,31 @@ class Aquarium(object):
         user = self.cast(user)
         return user
 
+
+    def forgot_password(self, email, aquarium_url=None):
+        """
+        Start forgot password procedure. User will receive an email to reset its password.
+
+        :param      email:        Email of the user who forgot its password
+        :type       email:        string
+        :param      aquarium_url: The Aquarium Studio interface url. Useful if API url is not the same as Aquarium Studio interface.
+        :type       aquarium_url: string, optional (default is api_url used during module initialisation)
+
+        :returns: True or False
+        :rtype: boolean
+        """
+
+        if (email is not None):
+            data = {
+                'email': email
+            }
+            headers = {
+                'origin': aquarium_url or self.api_url
+            }
+            self.do_request(
+            'POST', 'forgot', json=data, headers=headers)
+            return True
+
     def upload_file(self, path=''):
         """
         Uploads a file on the server
