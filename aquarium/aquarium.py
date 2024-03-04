@@ -3,6 +3,7 @@ import os
 import mimetypes
 
 from .auth import AquariumAuth
+from .sso import sso
 from .item import Item
 from .edge import Edge
 from .tools import evaluate
@@ -84,6 +85,7 @@ class Aquarium(object):
         self.domain=domain
 
         # Classes
+        self.sso=sso(parent=self)
         self.element=Element(parent=self)
         self.item=Item(parent=self)
         self.edge=Edge(parent=self)
