@@ -3,6 +3,7 @@ import os
 import mimetypes
 
 from .auth import AquariumAuth
+from .events import Events
 from .item import Item
 from .edge import Edge
 from .tools import evaluate
@@ -18,6 +19,7 @@ from .items.organisation import Organisation
 from .items.playlist import Playlist
 from .element import Element
 from .utils import Utils
+
 
 import requests
 
@@ -87,6 +89,7 @@ class Aquarium(object):
         self.domain=domain
 
         # Classes
+        self.events=Events(parent=self)
         self.element=Element(parent=self)
         self.item=Item(parent=self)
         self.edge=Edge(parent=self)
@@ -117,6 +120,10 @@ class Aquarium(object):
         """
         token=self.token
 
+        stream=False
+        if 'stream' in kwargs:
+            stream=kwargs['stream']
+
         decoding=True
         if 'decoding' in kwargs:
             decoding=kwargs.pop('decoding')
@@ -145,9 +152,12 @@ class Aquarium(object):
 
         logger.debug('Send request : %s %s', typ, path)
         response=self.session.request(typ, path, headers=headers, auth=AquariumAuth(self.token, self.domain), **kwargs)
-        evaluate(response)
-        if decoding:
-            response=response.json()
+
+        if not stream:
+            evaluate(response)
+            if decoding:
+                response=response.json()
+
         return response
 
     def cast(self, data={}):
