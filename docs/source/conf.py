@@ -22,7 +22,7 @@ copyright='2023, Fatfish Lab'
 author='Fatfish Lab'
 
 # The full version, including alpha/beta/rc tags
-release='2.0.12'
+release='2.1.0-dev.1'
 
 
 # -- General configuration ---------------------------------------------------
