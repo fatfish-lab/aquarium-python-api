@@ -6,6 +6,7 @@ from .auth import AquariumAuth
 from .item import Item
 from .edge import Edge
 from .tools import evaluate
+from .items.bot import Bot
 from .items.user import User
 from .items.template import Template
 from .items.project import Project
@@ -61,6 +62,8 @@ class Aquarium(object):
     :vartype task: :class:`~aquarium.items.task.Task`
     :var template: Access to Template subclass
     :vartype template: :class:`~aquarium.items.template.Template`
+    :var bot: Access to Bot subclass
+    :vartype bot: :class:`~aquarium.items.bot.Bot`
     :var user: Access to User subclass
     :vartype user: :class:`~aquarium.items.user.User`
     :var usergroup: Access to Usergroup subclass
@@ -89,6 +92,7 @@ class Aquarium(object):
         self.edge=Edge(parent=self)
         self.utils=Utils()
         # SubClasses
+        self.bot=Bot(parent=self)
         self.user=User(parent=self)
         self.usergroup=Usergroup(parent=self)
         self.organisation=Organisation(parent=self)
