@@ -34,7 +34,7 @@ class Events(object):
     def listen(self):
         self.listening = True
         if self.last_timestamp:
-            self.headers['Last-Event-ID'] = self.last_timestamp
+            self.headers['last-event-id'] = self.last_timestamp
 
         self.stream = self.parent.do_request('GET', '/events/stream', headers=self.headers, stream=True, decoding=False)
         self.stream_iterator = self.iter_content()
@@ -213,6 +213,7 @@ class Event(object):
         inst.createdBy=''
         inst.updatedAt=''
         inst.updatedBy=''
+        inst.emittedFrom=None
         inst.data=dict()
 
         if data:
@@ -252,6 +253,7 @@ class Event(object):
         self.createdBy=data.get('createdBy')
         self.updatedAt=data.get('updatedAt')
         self.updatedBy=data.get('updatedBy')
+        self.emittedFrom=data.get('emittedFrom')
 
         entity_data=data.get('data')
         if entity_data:
