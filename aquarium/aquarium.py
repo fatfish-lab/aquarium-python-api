@@ -76,7 +76,7 @@ class Aquarium(object):
     :vartype utils: :class:`~aquarium.utils.Utils`
     """
 
-    def __init__(self, api_url='', token='', api_version='v1', domain=None):
+    def __init__(self, api_url='', token=None, api_version='v1', domain=None):
         """
         Constructs a new instance.
         """
