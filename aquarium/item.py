@@ -15,6 +15,16 @@ class Item(Entity):
     This class describes an Item object child of Aquarium class.
     """
 
+    def to_dict(self):
+        """
+        Convert the item to a dictionary
+
+        :returns:   The item as a dictionary
+        :rtype:     dictionary
+        """
+
+        return super(Item, self).to_dict()
+
     def create(self, type='', data={}, path=None):
         """
         Create an item
