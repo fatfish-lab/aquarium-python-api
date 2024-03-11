@@ -88,7 +88,7 @@ class Project(Item):
         """
         statuses_dct = dict()
 
-        statuses = self.traverse(meshql="# -($Child)> $Properties AND item.data.projects_status != null VIEW item.data.projects_status")
+        statuses = self.traverse(meshql="# -($Child)> $Properties AND item.data.tasks_status != null SORT null VIEW item.data.tasks_status")
         for status in statuses:
             if status:
                 name = status.get('status')
