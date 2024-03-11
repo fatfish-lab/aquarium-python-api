@@ -331,3 +331,48 @@ class Event(Entity):
             return None
 
         return event
+
+    def get(self):
+        """
+        Get the event
+
+        :returns:   The event
+        :rtype:     Event object
+        """
+        if (self._key):
+            event = self.do_request('GET', 'events/{key}'.format(key=self._key))
+            self.set_data_variables(event)
+            return self
+        else:
+            raise ValueError('The event has no key, so it is not possible to get it')
+
+    def get_context(self):
+        """
+        Get the context of the event up to the project
+
+        :returns:   The context of the event with the item Project and it's traversal path
+        :rtype:     dictionary with the item :class:`~aquarium.item.Item` and path as list of :class:`~aquarium.item.Item`
+        """
+        endpoint = 'events/{key}/traverse'.format(key=self._key)
+        payload = {
+            "query": "# <($Emit)- 0,1 * <($Child, 10)- 0,1 item.type IN ['Project'] AND path.vertices[*].type NONE == 'User' SORT null VIEW $view",
+            "aliases": {
+                "view": {
+                    "item": "item",
+                    "path": "path.vertices"
+                }
+            }
+        }
+        if (self.emittedFrom):
+            payload['query'] = "# <($Child, 10)- 0,1 item.type IN ['Project'] AND path.vertices[*].type NONE == 'User' SORT null VIEW $view"
+            endpoint = '{emittedFrom}/traverse'.format(emittedFrom=self.emittedFrom)
+
+        context = self.do_request('POST', endpoint, json=payload)
+        print(payload['query'])
+        if (context and len(context) > 0):
+            return {
+                'item': self.parent.cast(context[0]['item']),
+                'path': [self.parent.cast(item) for item in context[0]['path']]
+            }
+        else:
+            raise ValueError('The event has emittedFrom attribute, but the context could not be found')
