@@ -18,6 +18,7 @@ from .items.usergroup import Usergroup
 from .items.organisation import Organisation
 from .items.playlist import Playlist
 from .element import Element
+from .events import Event
 from .utils import Utils
 
 
@@ -105,6 +106,7 @@ class Aquarium(object):
         self.task=Task(parent=self)
         self.shot=Shot(parent=self)
         self.asset=Asset(parent=self)
+        self.event=Event(parent=self)
 
     def do_request(self, *args, **kwargs):
         """
@@ -153,8 +155,8 @@ class Aquarium(object):
         logger.debug('Send request : %s %s', typ, path)
         response=self.session.request(typ, path, headers=headers, auth=AquariumAuth(self.token, self.domain), **kwargs)
 
+        evaluate(response)
         if not stream:
-            evaluate(response)
             if decoding:
                 response=response.json()
 
@@ -201,6 +203,9 @@ class Aquarium(object):
             #As Edge
             elif id.split('/')[0]=='connections':
                 cls=self.edge
+            #As Event
+            elif id.split('/')[0]=='events':
+                cls=self.event
             if cls is not None:
                 value=cls(data=data)
 
