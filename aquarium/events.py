@@ -351,14 +351,14 @@ class Event(Entity):
         Get the context of the event up to the project
 
         :returns:   The context of the event with the item Project and it's traversal path
-        :rtype:     dictionary with the item :class:`~aquarium.item.Item` and path as list of :class:`~aquarium.item.Item`
+        :rtype:     dictionary with the project :class:`~aquarium.item.Item` and path as list of :class:`~aquarium.item.Item`
         """
         endpoint = 'events/{key}/traverse'.format(key=self._key)
         payload = {
             "query": "# <($Emit)- 0,1 * <($Child, 10)- 0,1 item.type IN ['Project'] AND path.vertices[*].type NONE == 'User' SORT null VIEW $view",
             "aliases": {
                 "view": {
-                    "item": "item",
+                    "project": "item",
                     "path": "path.vertices"
                 }
             }
@@ -371,7 +371,7 @@ class Event(Entity):
         print(payload['query'])
         if (context and len(context) > 0):
             return {
-                'item': self.parent.cast(context[0]['item']),
+                'project': self.parent.cast(context[0]['project']),
                 'path': [self.parent.cast(item) for item in context[0]['path']]
             }
         else:
