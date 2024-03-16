@@ -47,6 +47,8 @@ class Aquarium(object):
     :type api_version: string, optional
     :param domain: Specify the domain used for unauthenticated requests. Mainly for Aquarium Fatfish Lab dev or local Aquarium server without DNS
     :type domain: string, optional
+    :param strict_dotmap: Specify if the dotmap should create new property dynamically (default : `False`). Set to `True` to have default Python behaviour like on Dict()
+    :type strict_dotmap: boolean, optional
 
     :var token: Get the current token (populated after a first :func:`~aquarium.aquarium.Aquarium.signin`)
     :var edge: Access to Edge class
@@ -77,7 +79,7 @@ class Aquarium(object):
     :vartype utils: :class:`~aquarium.utils.Utils`
     """
 
-    def __init__(self, api_url='', token=None, api_version='v1', domain=None):
+    def __init__(self, api_url='', token=None, api_version='v1', domain=None, strict_dotmap=False):
         """
         Constructs a new instance.
         """
@@ -88,6 +90,7 @@ class Aquarium(object):
         self.api_version=api_version
         self.token=token
         self.domain=domain
+        self.strict_dotmap=strict_dotmap
 
         # Classes
         self.events=Events(parent=self)
