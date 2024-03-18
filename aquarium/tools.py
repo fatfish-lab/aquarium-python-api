@@ -37,7 +37,7 @@ def evaluate(response=None):
     status_code=response.status_code
     url=response.url
     logger.debug('Evaluate request response : status_code : %s / url : %s', status_code, url)
-    if status_code == 200:
+    if status_code < 300:
         return True
     elif status_code==400:
         raise RequestError(response)
