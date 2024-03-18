@@ -272,7 +272,7 @@ class Event(Entity):
 
         entity_data=data.get('data')
         if entity_data:
-            self.data=DotMap(entity_data)
+            self.data=DotMap(entity_data, _dynamic=(not bool(self.parent.strict_dotmap)))
 
         topicRegex = r"^(?:custom[.])?(?P<category>\w+)([.](?P<verb>\w+))?([.](\w+))*$"
         topicMatched = re.match(topicRegex, self.topic)
