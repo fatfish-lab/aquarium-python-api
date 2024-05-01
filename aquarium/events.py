@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# This SSE integration is inspired by https://github.com/btubbs/sseclient Copyright (c) 2015 Brent Tubbs
+
 import re
 import json
 import time
@@ -16,6 +18,15 @@ logger=logging.getLogger(__name__)
 end_of_field = re.compile(r'\r\n\r\n|\r\r|\n\n')
 
 class Events(object):
+    """
+    This class describes the Events listenner to listen and process events from Aquarium.
+
+    :param wait: Specify how many seconds to wait before reconnecting to server.
+    :type wait: integer
+    :param chunk_size: Specify chunk size when reading and parsing an event.
+    :type chunk_size: integer
+    """
+
     def __init__(self, parent=None, wait=3000, chunk_size=1024):
         self.parent = parent
         self.wait = wait
@@ -33,12 +44,19 @@ class Events(object):
         }
 
     def listen(self):
+        """
+        Connect and starts streaming events from the server.
+
+        :returns: Events listener
+        :rtype: :class:`~aquarium.events.Events`
+        """
+
         self.listening = True
         if self.last_timestamp:
             self.headers['last-event-id'] = self.last_timestamp
 
         self.stream = self.parent.do_request('GET', '/events/stream', headers=self.headers, stream=True, decoding=False)
-        self.stream_iterator = self.iter_content()
+        self.stream_iterator = self._iter_content()
 
         encoding = self.stream.encoding or self.stream.apparent_encoding
         self.decoder = codecs.getincrementaldecoder(encoding)(errors='replace')
@@ -46,6 +64,10 @@ class Events(object):
         return self
 
     def start(self):
+        """
+        Starts processing events and trigger the callbacks.
+        """
+
         logger.info('Ready to listen to the event stream')
         for event in self:
             # Trigger callback for the exact event topic
@@ -67,12 +89,34 @@ class Events(object):
                 callback(event)
 
     def stop(self):
+        """
+        Stop listening to the event stream
+        """
         logger.info('Stopping the event stream')
         if self.stream:
             self.stream.close()
         self.listening = False
 
-    def subscribe(self, event, callback):
+    def subscribe(self, event = '*', callback = None):
+        """
+        Subscribe to an event's topic and define its callback
+
+        :param      event:  The event topic. It can be a specific event (item.created.Media), a part of topic (item.created), or a wildcard (*)
+        :type       event:  string
+        :param      callback:  The callback function
+        :type       callback:  function
+
+        .. tip::
+            An event topic is a string, constructed as follows:
+                - 'category.verb'
+            Some topics can include a detail  at the end to quickly filter events based on type:
+                - 'item.created.Media'
+                - 'edge.updated.Assigned'
+
+
+        :returns:   The callback
+        :rtype:     Callback object :class:`~aquarium.events._Callback`
+        """
         topic = event or '*'
         Callback = _Callback(callback)
 
@@ -82,7 +126,15 @@ class Events(object):
         self.listeners[topic].append(Callback)
         return Callback
 
-    def unsubscribe(self, event, callback):
+    def unsubscribe(self, event = '*', callback = None):
+        """
+        Unsubscribe to an event topic and remove its callback
+
+        :param      event:  The event topic
+        :type       event:  string
+        :param      callback:  The callback object
+        :type       callback:  Callback object :class:`~aquarium.events._Callback`
+        """
         topic = event or '*'
         if (self.listeners.get(topic)):
             try:
@@ -90,7 +142,7 @@ class Events(object):
             except Exception as e:
                 logger.error('Could not remove the callback')
 
-    def iter_content(self):
+    def _iter_content(self):
         def iter():
             while True:
                 for chunk in self.stream.iter_content(chunk_size=self.chunk_size):
@@ -101,6 +153,9 @@ class Events(object):
         return iter()
 
     def _event_complete(self):
+        """
+        Check if the event is complete
+        """
         return re.search(end_of_field, self.buf) is not None
 
     def __iter__(self):
@@ -133,7 +188,7 @@ class Events(object):
                 # and retain anything after the current complete event in self.buf
                 # for next time.
                 (event_string, self.buf) = re.split(end_of_field, self.buf, maxsplit=1)
-                event = Event.parse(event_string)
+                event = Event.parse(event_string, self.parent)
                 if (event):
                     self.last_timestamp = event._timestamp
                     if event._retry:
@@ -190,7 +245,7 @@ class Event(Entity):
         self._verb=None
 
         if (rawEvent):
-            return self.parse(rawEvent)
+            return self.parse(rawEvent, self.parent)
 
     def __call__(self, data={}):
         """
@@ -298,13 +353,13 @@ class Event(Entity):
         return result
 
     @classmethod
-    def parse(cls, raw):
+    def parse(cls, raw, parent):
         """
         Given a possibly-multiline string representing an SSE message, parse it
         and return a Event object.
         """
         sse_line_pattern = re.compile('(?P<name>[^:]*):?( ?(?P<value>.*))?')
-        event = cls()
+        event = cls(parent=parent)
         for line in raw.splitlines():
             lineMatched = sse_line_pattern.match(line)
             if lineMatched is None:

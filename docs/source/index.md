@@ -17,6 +17,7 @@ introduction
 - [Aquarium()](reference/aquarium.md)
   - [Item()](reference/item.md)
   - [Edge()](reference/edge.md)
+  - [Events()](reference/events.md)
   - [Utils()](reference/utils.md)
 
 ## Aller-plus loin...
@@ -31,6 +32,7 @@ introduction
 reference/aquarium
 reference/item
 reference/edge
+reference/events
 reference/utils
 API REST documentation <https://docs.fatfish.app/#/dev/welcome>
 ```

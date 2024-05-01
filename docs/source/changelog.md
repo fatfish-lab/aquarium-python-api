@@ -1,4 +1,4 @@
 # Changelog
 
-Les changelog sont en cours de rédactions. Entre temps, si vous avez des questions, n'hésitez pas à [nous contacter](support.md).
+Les changelog sont disponibles directement sur notre [Github](https://github.com/fatfish-lab/aquarium-python-api/releases)
 

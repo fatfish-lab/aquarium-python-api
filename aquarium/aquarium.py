@@ -51,6 +51,8 @@ class Aquarium(object):
     :type strict_dotmap: boolean, optional
 
     :var token: Get the current token (populated after a first :func:`~aquarium.aquarium.Aquarium.signin`)
+    :var events: Access to Events class
+    :vartype events: :class:`~aquarium.events.Events`
     :var edge: Access to Edge class
     :vartype edge: :class:`~aquarium.edge.Edge`
     :var item: Access to Item class
