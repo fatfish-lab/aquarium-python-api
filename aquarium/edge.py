@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import json
 from .tools import to_string_url
 from .entity import Entity
 
@@ -44,7 +43,7 @@ class Edge(Entity):
                        type=type,
                        data=data)
 
-        result = self.do_request('POST', 'edges', data=json.dumps(payload))
+        result = self.do_request('POST', 'edges', json=payload)
         result = self.parent.cast(result)
         return result
 
@@ -64,23 +63,28 @@ class Edge(Entity):
         """
         data = dict(data=data)
         result = self.do_request(
-            'PUT', 'edges/'+self._key, data=json.dumps(data))
+            'PUT', 'edges/'+self._key, json=data)
         result = self.parent.cast(result)
         return result
 
-    def update_data(self, data={}):
+    def update_data(self, data={}, deep_merge=True):
         """
         Update the edge data by merging the existing ones with the new ones
 
-        :param      data:  The new edge data
-        :type       data:  dictionary
+        :param      data:        The new edge data
+        :type       data:        dictionary
+        :param      deep_merge:  Merge nested objects
+        :type       deep_merge:  boolean, optional
 
         :returns:   Edge object
         :rtype:     :class:`~aquarium.edge.Edge`
         """
-        data = dict(data=data)
+        data = dict(
+            data=data,
+            deepMerge=deep_merge
+        )
         result = self.do_request(
-            'PATCH', 'edges/'+self._key, data=json.dumps(data))
+            'PATCH', 'edges/'+self._key, json=data)
         result = self.parent.cast(result)
         return result
 

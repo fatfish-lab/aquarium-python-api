@@ -4,7 +4,7 @@ import logging
 logger=logging.getLogger(__name__)
 from .exceptions import RequestError, AuthentificationError,\
                         AutorisationError, PathNotFoundError, \
-                        ConflictError, UploadExceedLimit, InternalError
+                        MethodNotAllowed, ConflictError, UploadExceedLimit, InternalError
 
 def pretty_print_format(data={}, indent=8, width=80, depth=10):
     dict_string=pprint.pformat(data, indent=indent, width=width, depth=depth)
@@ -36,6 +36,7 @@ def evaluate(response=None):
     """
     status_code=response.status_code
     url=response.url
+    text=response.text
     logger.debug('Evaluate request response : status_code : %s / url : %s', status_code, url)
     if status_code == 200:
         return True
@@ -47,6 +48,8 @@ def evaluate(response=None):
         raise AutorisationError(response)
     elif status_code==404:
         raise PathNotFoundError(response)
+    elif status_code==405:
+        raise MethodNotAllowed(response)
     elif status_code==409:
         raise ConflictError(response)
     elif status_code==413:
@@ -54,6 +57,22 @@ def evaluate(response=None):
     elif status_code==500:
         raise InternalError(response)
     else:
-        raise RuntimeError('code {0} : {1} url:{2}'.format(
-            status_code, response, url))
+        raise RuntimeError('code {status_code} | url:{url} | {content}'.format(
+            status_code=status_code,
+            content=text,
+            url=url
+        ))
 
+def jsonify(dictionnary):
+    """
+    Convert dict to a json object
+
+    :param      dictionnary:        The dict
+    :type       dictionnary:        dict object
+
+    :returns:   Update directly the dict
+    :rtype:     None
+    """
+    for key, value in dictionnary.items():
+        if isinstance(value, bool):
+            dictionnary[key] = str(value).lower()

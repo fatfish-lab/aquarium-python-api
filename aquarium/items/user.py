@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from .. import URL_CONTENT_TYPE
 from ..item import Item
 from ..element import Element
 import logging
@@ -10,6 +9,16 @@ class User(Item):
     """
     This class describes an User object child of Item class.
     """
+
+    def set_data_variables(self, data={}):
+        """
+        Sets the data variables of the User
+
+        :param      data:  The object item from Aquarium API
+        :type       data:  dictionary
+        """
+        super(Item, self).set_data_variables(data=data)
+        self.active = data.get('active', False)
 
     def signin(self, email='', password=''):
         """
@@ -27,7 +36,7 @@ class User(Item):
         # Authenticate and retrieve the access token
         payload = dict(email=email, password=password)
         result = self.do_request(
-            'POST', 'signin', headers=URL_CONTENT_TYPE, data=payload)
+            'POST', 'signin', json=payload)
 
        # Store authentification information
         token = result.pop("token")
@@ -120,3 +129,107 @@ class User(Item):
         result = self.traverse(meshql=' '.join(query))
         result = [self.parent.element(data) for data in result]
         return result
+
+    def promote_as_admin(self):
+        """
+        Promote the user as admin.
+
+        .. tip::
+            Admin users can
+                - administrate items
+                - access administrative panel
+
+        :returns:   Membership edge object
+        :rtype:     dict
+        """
+
+        domain = self.parent.usergroup('domain')
+        domain.add_user(self._key)
+
+    def promote_as_super_admin(self):
+        """
+        Promote the user as super admin.
+
+        .. tip::
+            Super admin users can
+                - add/remove licenses, users and files
+                - administrate items
+                - access administrative panel
+
+        :returns:   A dict with the {user: participant, edge: the created permission edge}
+        :rtype:     dict
+        """
+
+        domain = self.parent.usergroup('domain')
+
+        try:
+            domain.add_user(self._key)
+        except:
+            pass
+
+        return domain.create_permission(self._key, 'rwsadtlug', False)
+
+    def demote(self):
+        """
+        Remove admin and super admin privilege.
+
+        :returns:   None
+        """
+
+        domain = self.parent.usergroup('domain')
+
+        try:
+            domain.remove_user(self._key)
+            domain.remove_participant(self._key)
+        except:
+            pass
+
+    def get_admin_status(self):
+        """
+        Return user admin status (None, 'admin' or 'super admin')
+
+        :returns: Admin status of the user
+        :rtype: None or 'admin' or 'super admin'
+        """
+
+        status = None
+
+        domain = self.parent.usergroup('domain')
+        members = domain.get_users()
+
+        if (any([m for m in members if m._key == self._key])):
+                status = 'admin'
+
+        if status is not None:
+            domain_permissions = domain.get_permissions()
+            if (any([p for p in domain_permissions if p.user._key == self._key])):
+                status = 'super_admin'
+
+
+        return status
+
+    def forgot_password(self, aquarium_url=None):
+        """
+        Start forgot password procedure. User will receive an email to reset its password.
+
+        :param      aquarium_url: The Aquarium Studio interface url. Useful if API url is not the same as Aquarium Studio interface.
+        :type       aquarium_url: string, optional (default is api_url used during module initialisation)
+
+        :returns: True or False
+        :rtype: boolean
+        """
+
+        email = self.data.email
+
+        if (email is not None):
+            data = {
+                'email': email
+            }
+            headers = {
+                'origin': aquarium_url or self.parent.api_url
+            }
+            self.do_request(
+            'POST', 'forgot', json=data, headers=headers)
+            return True
+        else:
+            return False

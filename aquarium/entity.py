@@ -86,7 +86,7 @@ class Entity(object):
 
         entity_data=data.get('data')
         if entity_data:
-            self.data=DotMap(entity_data)
+            self.data=DotMap(entity_data, _dynamic=(not bool(self.parent.strict_dotmap)))
 
     def do_request(self, *args, **kwargs):
         """

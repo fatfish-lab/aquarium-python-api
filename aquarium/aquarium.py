@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-from . import JSON_CONTENT_TYPE
+import os
+import mimetypes
+
+from .auth import AquariumAuth
 from .item import Item
 from .edge import Edge
 from .tools import evaluate
@@ -38,6 +41,10 @@ class Aquarium(object):
     :type token: string, optional
     :param api_version: Specify the API version you want to use (default : `v1`).
     :type api_version: string, optional
+    :param domain: Specify the domain used for unauthenticated requests. Mainly for Aquarium Fatfish Lab dev or local Aquarium server without DNS
+    :type domain: string, optional
+    :param strict_dotmap: Specify if the dotmap should create new property dynamically (default : `False`). Set to `True` to have default Python behaviour like on Dict()
+    :type strict_dotmap: boolean, optional
 
     :var token: Get the current token (populated after a first :func:`~aquarium.aquarium.Aquarium.signin`)
     :var edge: Access to Edge class
@@ -66,7 +73,7 @@ class Aquarium(object):
     :vartype utils: :class:`~aquarium.utils.Utils`
     """
 
-    def __init__(self, api_url='', token='', api_version='v1'):
+    def __init__(self, api_url='', token='', api_version='v1', domain=None, strict_dotmap=False):
         """
         Constructs a new instance.
         """
@@ -76,6 +83,9 @@ class Aquarium(object):
         self.api_url=api_url
         self.api_version=api_version
         self.token=token
+        self.domain=domain
+        self.strict_dotmap=strict_dotmap
+
         # Classes
         self.element=Element(parent=self)
         self.item=Item(parent=self)
@@ -110,13 +120,11 @@ class Aquarium(object):
         if 'decoding' in kwargs:
             decoding=kwargs.pop('decoding')
 
+        headers=None
         if 'headers' in kwargs:
             headers=kwargs.pop('headers')
             if headers is not None:
                 headers.update(dict(authorization=token))
-        else:
-            headers=dict(authorization=token)
-            headers.update(JSON_CONTENT_TYPE)
 
         args=list(args)
         typ=args[0]
@@ -135,8 +143,7 @@ class Aquarium(object):
             path = urljoin(path, self.api_version)
 
         logger.debug('Send request : %s %s', typ, path)
-        self.session.headers.update(headers)
-        response=self.session.request(typ, path, **kwargs)
+        response=self.session.request(typ, path, headers=headers, auth=AquariumAuth(self.token, self.domain), **kwargs)
         evaluate(response)
         if decoding:
             response=response.json()
@@ -265,6 +272,83 @@ class Aquarium(object):
         result=self.do_request('GET', 'status')
         return result
 
+    def ping (self):
+        """
+        Ping Aquarium server
+
+        :returns: Ping response: pong
+        :rtype:   string
+        """
+        ping = self.do_request('GET', 'ping', decoding=False)
+        return ping.text
+
+    def get_users (self):
+        """
+        Get all users
+
+        :returns: List of all users
+        :rtype:   List of :class:`~aquarium.items.user.User`
+        """
+
+        users = self.do_request('GET', 'users')
+
+        users = [self.cast(user) for user in users]
+        return users
+
+    def create_user (self, email, name=None, aquarium_url=None):
+        """
+        Create a new user
+
+        :param      email:  The email of the new user
+        :type       email:  string
+        :param      name:   The name of the new user
+        :type       name:   string, optional
+        :param      aquarium_url: The Aquarium Studio interface url. Useful if API url is not the same as Aquarium Studio interface.
+        :type       aquarium_url: string, optional (default is api_url used during module initialisation)
+
+        :returns:   User object
+        :rtype:     :class:`~aquarium.items.user.User`
+        """
+
+        payload = dict(email=email)
+        if name != None:
+            payload['name'] = name
+
+        headers = {
+            'origin': aquarium_url or self.api_url
+        }
+
+        user = self.do_request(
+            'POST', 'users', json=payload, headers=headers)
+
+        user = self.cast(user)
+        return user
+
+
+    def forgot_password(self, email, aquarium_url=None):
+        """
+        Start forgot password procedure. User will receive an email to reset its password.
+
+        :param      email:        Email of the user who forgot its password
+        :type       email:        string
+        :param      aquarium_url: The Aquarium Studio interface url. Useful if API url is not the same as Aquarium Studio interface.
+        :type       aquarium_url: string, optional (default is api_url used during module initialisation)
+
+        :returns: True or False
+        :rtype: boolean
+        """
+
+        if (email is not None):
+            data = {
+                'email': email
+            }
+            headers = {
+                'origin': aquarium_url or self.api_url
+            }
+            self.do_request(
+            'POST', 'forgot', json=data, headers=headers)
+            return True
+
     def upload_file(self, path=''):
         """
         Uploads a file on the server
@@ -280,9 +364,14 @@ class Aquarium(object):
         :rtype:     dictionary
         """
         logger.debug('Upload file : %s', path)
-        files=dict(file=open(path, 'rb'))
-        result = self.do_request('POST', 'upload', headers={'Content-Type': None}, files=files)
-        files['file'].close()
+
+        file = open(path, 'rb')
+        filename = os.path.basename(path)
+        file_content_type = mimetypes.guess_type(filename)
+
+        files=dict(file=(filename, file, file_content_type))
+        result = self.do_request('POST', 'upload', files=files)
+        file.close()
         return result
 
     def query(self, meshql='', aliases={}):
@@ -303,7 +392,7 @@ class Aquarium(object):
         logger.debug('Send query : meshql : %s / aliases : %r',
                      meshql, aliases)
         data=dict(query=meshql, aliases=aliases)
-        result=self.do_request('POST', 'query', data=json.dumps(data))
+        result=self.do_request('POST', 'query', json=data)
         return result
 
     def get_file(self, file_path):

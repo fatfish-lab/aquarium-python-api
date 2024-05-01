@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import json
 from ..item import Item
 
 
@@ -92,25 +91,47 @@ class Organisation(Item):
         result=[self.parent.user(user) for user in result]
         return result
 
-    def create_member(self, email, name=None):
+    def add_member(self, user_key):
         """
-        Create a new member in your organisation
+        Add an existing user in your organisation
 
-        :param      email:  The email of the new member
-        :type       email:  string
-        :param      name:  The name of the new member
-        :type       name:  string, optional
+        :param      user_key:  The user key of the user to add in the organisation
+        :type       user_key:  string
 
         :returns:   User object
         :rtype:     :class:`~aquarium.items.user.User`
         """
 
-        payload = dict(email=email, name=name)
-        data = dict(data=payload)
+        payload = dict(userKey=user_key)
+
         member = self.do_request(
-            'POST', 'organisations/{0}/createMember'.format(self._key), data=json.dumps(data))
+            'POST', 'organisations/{organisationKey}/members'.format(
+                organisationKey=self._key
+            ), json=payload)
 
         member = self.parent.cast(member)
+
+        return member
+
+    def create_member(self, email, name=None, aquarium_url=None):
+        """
+        Create a new member in your organisation
+
+        :param      email:        The email of the new member
+        :type       email:        string
+        :param      name:         The name of the new member
+        :type       name:         string, optional
+        :param      aquarium_url: The Aquarium Studio interface url. Useful if API url is not the same as Aquarium Studio interface.
+        :type       aquarium_url: string, optional (default is api_url used during module initialisation)
+
+        :returns:   User object
+        :rtype:     :class:`~aquarium.items.user.User`
+        """
+
+        member = self.parent.create_user(email, name, aquarium_url)
+
+        self.add_member(member._key)
+
         return member
 
     def get_suborganisations(self, limit=200, offset=None):

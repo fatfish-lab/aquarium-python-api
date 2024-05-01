@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import json
-from .. import URL_CONTENT_TYPE
 from ..item import Item
 import logging
 logger = logging.getLogger(__name__)
@@ -19,7 +17,7 @@ class Usergroup(Item):
         :rtype:     List of :class:`~aquarium.items.user.User`
         """
         result = self.do_request(
-            'GET', 'usergroups/'+self._key, headers=URL_CONTENT_TYPE)
+            'GET', 'usergroups/'+self._key)
 
         result = [self.parent.cast(data) for data in result]
         return result
@@ -37,7 +35,7 @@ class Usergroup(Item):
         logger.debug('Add user %s to usergroup %s', user_key, self._key)
         payload = dict(userKey=user_key)
         result = self.do_request(
-            'POST', 'usergroups/'+self._key, data=json.dumps(payload))
+            'POST', 'usergroups/'+self._key, json=payload)
         return result
 
     def remove_user(self, user_key=''):
@@ -53,5 +51,5 @@ class Usergroup(Item):
         logger.debug('Remove user %s to usergroup %s', user_key, self._key)
         payload = dict(userKey=user_key)
         result = self.do_request(
-            'DELETE', 'usergroups/'+self._key, data=json.dumps(payload))
+            'DELETE', 'usergroups/'+self._key, json=payload)
         return result
