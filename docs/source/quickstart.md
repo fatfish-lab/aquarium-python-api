@@ -35,3 +35,12 @@ my_tasks=me.get_tasks()
 
 projects=aq.project.get_all()
 ```
+
+Vous pouvez également vous connecter à Aquarium en utilisant un bot:
+
+```python
+from aquarium import Aquarium
+
+aq=Aquarium('https://your-aquarium-server')
+aq.bot(AQ_BOT_KEY).connect(AQ_BOT_SECRET)
+```

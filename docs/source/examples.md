@@ -98,3 +98,12 @@ events.unsubscribe('*', allEvents)
 
 events.start()
 ```
+
+## Se connecter à Aquarium avec un bot
+
+```python
+from aquarium import Aquarium
+
+aq=Aquarium('https://your-aquarium-server')
+aq.bot(AQ_BOT_KEY).connect(AQ_BOT_SECRET)
+```
