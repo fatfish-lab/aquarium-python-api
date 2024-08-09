@@ -46,11 +46,10 @@ You can contact our team at [support@fatfi.sh](mailto:support@fatfi.sh).
 > Rather the package is compatible with python 2.7 and 3, the Sphinx documentation is using python 3.
 
 1. Clone this repository
-2. Setup a virtual env : `virtualenv pyaq`
-3. Setup a virtual env : `virtualenv pyaq`
+1. Setup a virtual env : `virtualenv pyaq`
    1. If needed, you can specify the version of python used in your virtual env : `virtualenv --python=/usr/bin/python3 pyaq3`
-4. Enable your virtual env : `source pyaq/bin/activate`
-5. Install local Aquarium package to your virtual env : `pip install -e /path/to/package/aquarium-python-api`
+1. Enable your virtual env : `source pyaq/bin/activate`
+1. Install local Aquarium package to your virtual env : `pip install -e /path/to/package/aquarium-python-api`
 
 ### Build the documation
 

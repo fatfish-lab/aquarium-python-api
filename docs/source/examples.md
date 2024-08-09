@@ -84,3 +84,26 @@ for media in medias:
 
 imported_media = playlist.item.get_medias()
 ```
+
+## Ecouter des événements
+
+```python
+events = aq.events.listen()
+callback = lambda event: print(event)
+
+allEvents = events.subscribe('*', callback)
+itemCreated = events.subscribe('item.created', callback)
+
+events.unsubscribe('*', allEvents)
+
+events.start()
+```
+
+## Se connecter à Aquarium avec un bot
+
+```python
+from aquarium import Aquarium
+
+aq=Aquarium('https://your-aquarium-server')
+aq.bot(AQ_BOT_KEY).connect(AQ_BOT_SECRET)
+```

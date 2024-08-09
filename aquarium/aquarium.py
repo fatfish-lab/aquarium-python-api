@@ -4,9 +4,11 @@ import mimetypes
 
 from .auth import AquariumAuth
 from .sso import sso
+from .events import Events
 from .item import Item
 from .edge import Edge
 from .tools import evaluate
+from .items.bot import Bot
 from .items.user import User
 from .items.template import Template
 from .items.project import Project
@@ -17,7 +19,9 @@ from .items.usergroup import Usergroup
 from .items.organisation import Organisation
 from .items.playlist import Playlist
 from .element import Element
+from .events import Event
 from .utils import Utils
+
 
 import requests
 
@@ -44,8 +48,12 @@ class Aquarium(object):
     :type api_version: string, optional
     :param domain: Specify the domain used for unauthenticated requests. Mainly for Aquarium Fatfish Lab dev or local Aquarium server without DNS
     :type domain: string, optional
+    :param strict_dotmap: Specify if the dotmap should create new property dynamically (default : `False`). Set to `True` to have default Python behaviour like on Dict()
+    :type strict_dotmap: boolean, optional
 
     :var token: Get the current token (populated after a first :func:`~aquarium.aquarium.Aquarium.signin`)
+    :var events: Access to Events class
+    :vartype events: :class:`~aquarium.events.Events`
     :var edge: Access to Edge class
     :vartype edge: :class:`~aquarium.edge.Edge`
     :var item: Access to Item class
@@ -62,6 +70,8 @@ class Aquarium(object):
     :vartype task: :class:`~aquarium.items.task.Task`
     :var template: Access to Template subclass
     :vartype template: :class:`~aquarium.items.template.Template`
+    :var bot: Access to Bot subclass
+    :vartype bot: :class:`~aquarium.items.bot.Bot`
     :var user: Access to User subclass
     :vartype user: :class:`~aquarium.items.user.User`
     :var usergroup: Access to Usergroup subclass
@@ -72,7 +82,7 @@ class Aquarium(object):
     :vartype utils: :class:`~aquarium.utils.Utils`
     """
 
-    def __init__(self, api_url='', token='', api_version='v1', domain=None):
+    def __init__(self, api_url='', token=None, api_version='v1', domain=None, strict_dotmap=False):
         """
         Constructs a new instance.
         """
@@ -83,14 +93,17 @@ class Aquarium(object):
         self.api_version=api_version
         self.token=token
         self.domain=domain
+        self.strict_dotmap=strict_dotmap
 
         # Classes
         self.sso=sso(parent=self)
+        self.events=Events(parent=self)
         self.element=Element(parent=self)
         self.item=Item(parent=self)
         self.edge=Edge(parent=self)
         self.utils=Utils()
         # SubClasses
+        self.bot=Bot(parent=self)
         self.user=User(parent=self)
         self.usergroup=Usergroup(parent=self)
         self.organisation=Organisation(parent=self)
@@ -100,6 +113,7 @@ class Aquarium(object):
         self.task=Task(parent=self)
         self.shot=Shot(parent=self)
         self.asset=Asset(parent=self)
+        self.event=Event(parent=self)
 
     def do_request(self, *args, **kwargs):
         """
@@ -114,6 +128,10 @@ class Aquarium(object):
         :rtype:     List or dictionary
         """
         token=self.token
+
+        stream=False
+        if 'stream' in kwargs:
+            stream=kwargs['stream']
 
         decoding=True
         if 'decoding' in kwargs:
@@ -143,9 +161,12 @@ class Aquarium(object):
 
         logger.debug('Send request : %s %s', typ, path)
         response=self.session.request(typ, path, headers=headers, auth=AquariumAuth(self.token, self.domain), **kwargs)
+
         evaluate(response)
-        if decoding:
-            response=response.json()
+        if not stream:
+            if decoding:
+                response=response.json()
+
         return response
 
     def cast(self, data={}):
@@ -189,6 +210,9 @@ class Aquarium(object):
             #As Edge
             elif id.split('/')[0]=='connections':
                 cls=self.edge
+            #As Event
+            elif id.split('/')[0]=='events':
+                cls=self.event
             if cls is not None:
                 value=cls(data=data)
 

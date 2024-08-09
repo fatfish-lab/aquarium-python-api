@@ -15,6 +15,16 @@ class Item(Entity):
     This class describes an Item object child of Aquarium class.
     """
 
+    def to_dict(self):
+        """
+        Convert the item to a dictionary
+
+        :returns:   The item as a dictionary
+        :rtype:     dictionary
+        """
+
+        return super(Item, self).to_dict()
+
     def create(self, type='', data={}, path=None):
         """
         Create an item
@@ -99,6 +109,26 @@ class Item(Entity):
                     result.item.data[key] = upload.data[key]
 
         return result
+
+    def link(self, to_key, type='Child', data={}):
+        """
+        Create an edge from this item to the item in to_key param
+
+        .. tip::
+            The type of the edge is case sensitive ! By convention, all edges' type start with a capital letter
+
+        :param      type:      The edge type
+        :type       type:      string
+        :param      to_key:    The destination key
+        :type       to_key:    string
+        :param      data:      The edge data
+        :type       data:      dictionary, optional
+
+        :returns:   Edge object
+        :rtype:     :class:`~aquarium.edge.Edge`
+        """
+
+        return self.parent.edge.create(type, self._key, to_key, data)
 
     def traverse(self, meshql='', aliases={}):
         """

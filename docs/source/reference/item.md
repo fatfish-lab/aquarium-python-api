@@ -12,6 +12,7 @@ items/shot
 items/task
 items/template
 items/user
+items/bot
 items/usergroup
 items/organisation
 ```

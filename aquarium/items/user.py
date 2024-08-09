@@ -36,7 +36,7 @@ class User(Item):
         # Authenticate and retrieve the access token
         payload = dict(email=email, password=password)
         result = self.do_request(
-            'POST', 'signin', data=payload)
+            'POST', 'signin', json=payload)
 
        # Store authentification information
         token = result.pop("token")
