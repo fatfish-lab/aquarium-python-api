@@ -1,0 +1,7 @@
+{
+  "editor.tabSize": 4,
+  "workbench.colorCustomizations": {
+      "statusBar.background": "#ffe066",
+      "statusBar.foreground": "#1971c2"
+  },
+}
