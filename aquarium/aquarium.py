@@ -370,7 +370,7 @@ class Aquarium(object):
             'POST', 'forgot', json=data, headers=headers)
             return True
 
-    def upload_file(self, path=''):
+    def upload_file(self, path='', encoded=False):
         """
         Uploads a file on the server
 
@@ -380,6 +380,8 @@ class Aquarium(object):
 
         :param      path:  The path of the file to upload
         :type       path:  string
+        :param      encoded:  If the video file is already encoded for the web and shouldn't be re-process by the server, optional
+        :type       encoded:  boolean
 
         :returns:   The file metadata on Aquarium
         :rtype:     dictionary
@@ -391,7 +393,14 @@ class Aquarium(object):
         file_content_type = mimetypes.guess_type(filename)
 
         files=dict(file=(filename, file, file_content_type))
-        result = self.do_request('POST', 'upload', files=files)
+
+        headers = None
+        if (encoded):
+            headers = {
+                "x-file-encoded": "true"
+            }
+
+        result = self.do_request('POST', 'upload', files=files, headers=headers)
         file.close()
         return result
 
