@@ -8,7 +8,7 @@ class Asset(Item):
     This class describes an Asset object child of Item class.
     """
 
-    def upload_on_task(self, task_name='', path=None, data={}, version_name=None, override_media = True, message = None):
+    def upload_on_task(self, task_name='', path=None, data={}, version_name=None, override_media = True, message = None, encoded = False):
         """
         Uploads new media version on asset task
 
@@ -24,6 +24,8 @@ class Asset(Item):
         :type       override_media: boolean
         :param      message:        The message associated with the upload, optional
         :type       message:        string
+        :param      encoded:  If the video file is already encoded for the web and shouldn't be re-process by the server, optional
+        :type       encoded:  boolean
 
         :returns:   Updated media object
         :rtype:     dictionary
@@ -53,9 +55,9 @@ class Asset(Item):
 
         if version_name == None:
             if not media_key or override_media == False:
-                return task.append(type='Media', data=data, path=path)
+                return task.append(type='Media', data=data, path=path, encoded=encoded)
             else:
-                return self.parent.item(media_key).upload_file(path=path, data=data, message=message)
+                return self.parent.item(media_key).upload_file(path=path, data=data, message=message, encoded=encoded)
         else:
             versions = task.get_children(types='Version', names=version_name)
 
@@ -76,13 +78,13 @@ class Asset(Item):
 
                         media = existing_medias[0].item
                         return media.upload_file(
-                            path=path, data=data, message=message)
+                            path=path, data=data, message=message, encoded=encoded)
                     else:
-                        return version.append(type='Media', data=data, path=path)
+                        return version.append(type='Media', data=data, path=path, encoded=encoded)
                 else:
-                    return version.append(type='Media', data=data, path=path)
+                    return version.append(type='Media', data=data, path=path, encoded=encoded)
             else:
-                return version.append(type='Media', data=data, path=path)
+                return version.append(type='Media', data=data, path=path, encoded=encoded)
 
 
     def get_tasks(self, task_name='', task_status=''):

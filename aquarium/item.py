@@ -25,7 +25,7 @@ class Item(Entity):
 
         return super(Item, self).to_dict()
 
-    def create(self, type='', data={}, path=None):
+    def create(self, type='', data={}, path=None, encoded=False):
         """
         Create an item
 
@@ -42,6 +42,8 @@ class Item(Entity):
         :type       data:  dictionary, optional
         :param      path:  File path you want to upload on the appended item
         :type       path:  string, optional
+        :param      encoded:  If the video file is already encoded for the web and shouldn't be re-process by the server, optional
+        :type       encoded:  boolean, optional
 
         :returns:   Item object
         :rtype:     :class:`~aquarium.item.Item` or subclass : :class:`~aquarium.items.asset.Asset` | :class:`~aquarium.items.project.Project` | :class:`~aquarium.items.shot.Shot` | :class:`~aquarium.items.task.Task` | :class:`~aquarium.items.template.Template` | :class:`~aquarium.items.user.User` | :class:`~aquarium.items.usergroup.Usergroup`
@@ -52,13 +54,13 @@ class Item(Entity):
         result = self.parent.cast(result)
 
         if path != None:
-            upload = result.upload_file(path=path)
+            upload = result.upload_file(path=path, encoded=encoded)
             if upload != None:
                 for key in upload.data:
                     result.data[key] = upload.data[key]
         return result
 
-    def append(self, type='', data={}, edge_type='Child', edge_data={}, apply_template=None, template_key=None, path=None):
+    def append(self, type='', data={}, edge_type='Child', edge_data={}, apply_template=None, template_key=None, path=None, encoded=False):
         """
         Create and append a new item to the current one
 
@@ -70,12 +72,18 @@ class Item(Entity):
         :type       type:            string
         :param      data:            The new item data, optional
         :type       data:            dictionary
+        :param      edge_type:       The edge type
+        :type       edge_type:       string
+        :param      edge_data:       The edge data
+        :type       edge_data:       dictionary, optional
         :param      apply_template:  Do apply template ?
         :type       apply_template:  boolean, optional
         :param      template_key:    The template key to apply. If no template key, `automatic context's template <https://docs.fatfish.app/#/userguide/items?id=templates>`_ will be used.
         :type       template_key:    string, optional
         :param      path:            File path you want to upload on the appended item
         :type       path:            string, optional
+        :param      encoded:         If the video file is already encoded for the web and shouldn't be re-process by the server, optional
+        :type       encoded:         boolean, optional
 
         :returns:   Dictionary composed by an item and its edge.
         :rtype:     dict {item: :class:`~aquarium.item.Item` or subclass : :class:`~aquarium.items.asset.Asset` | :class:`~aquarium.items.project.Project` | :class:`~aquarium.items.shot.Shot` | :class:`~aquarium.items.task.Task` | :class:`~aquarium.items.template.Template` | :class:`~aquarium.items.user.User` | :class:`~aquarium.items.usergroup.Usergroup` | :class:`~aquarium.items.organisation.Organisation`, edge: :class:`~aquarium.edge.Edge}`
@@ -103,7 +111,7 @@ class Item(Entity):
         result = self.parent.element(result)
 
         if path != None:
-            upload = result.item.upload_file(path=path)
+            upload = result.item.upload_file(path=path, encoded=encoded)
             if upload != None:
                 for key in upload.data:
                     result.item.data[key] = upload.data[key]
@@ -633,7 +641,7 @@ class Item(Entity):
             'DELETE', 'trashed_items/'+self._key)
         return result
 
-    def upload_file(self, path='', data = {}, message = None):
+    def upload_file(self, path='', data = {}, message = None, encoded = False):
         """
         Upload a file on the item
 
@@ -648,6 +656,8 @@ class Item(Entity):
         :type       data:  dict
         :param      message:  The message associated with the upload, optional
         :type       message:  string
+        :param      encoded:  If the video file is already encoded for the web and shouldn't be re-process by the server, optional
+        :type       encoded:  boolean
 
         :returns:   Item object
         :rtype:     :class:`~aquarium.item.Item`
@@ -658,13 +668,19 @@ class Item(Entity):
         filename = os.path.basename(path)
         file_content_type = mimetypes.guess_type(filename)
 
+        headers = None
+        if (encoded):
+            headers = {
+                "x-file-encoded": "true"
+            }
+
         files = dict(
             file=(filename, file, file_content_type),
             data=(None, json.dumps(data), 'text/plain'),
             message=(None, message, 'text/plain')
         )
         result = self.do_request(
-            'POST', 'items/'+self._key+'/upload', files=files)
+            'POST', 'items/'+self._key+'/upload', files=files, headers=headers)
         file.close()
         result = self.parent.cast(result)
         return result
