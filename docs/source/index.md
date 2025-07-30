@@ -4,7 +4,7 @@ Bienvenue !
 
 Cette documentation vous expliquera comment intéragir avec l'API d'Aquarium via Python.
 
-Notre guide développeur est disponible dans [notre documentation Aquarium Studio](https://docs.fatfish.app/#/dev/welcome).
+Notre guide développeur est disponible dans [notre documentation Aquarium Studio](https://docs.aquarium.app/api/).
 
 ## Premiers pas
 ```{toctree}
@@ -34,7 +34,7 @@ reference/item
 reference/edge
 reference/events
 reference/utils
-API REST documentation <https://docs.fatfish.app/#/dev/welcome>
+API REST documentation <https://docs.aquarium.app/api/>
 ```
 
 ```{toctree}

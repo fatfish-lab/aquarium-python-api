@@ -3,9 +3,9 @@
 
 ![aquarium-python-api](https://github.com/fatfish-lab/aquarium-python-api/blob/main/docs/source/_static/logo.png?raw=true)
 
-> Aquarium python API is a tool that allows [Aquarium Studio](https://fatfi.sh/aquarium) users to interact with there data from directly from Python.
+> Aquarium python API is a tool that allows [Aquarium](https://fatfi.sh/aquarium) users to interact with there data from directly from Python.
 
-Aquarium Studio is developed by [Fatfish Lab](https://fatfi.sh)
+Aquarium is developed by [Fatfish Lab](https://fatfi.sh)
 
 ```python
 # -*- coding: utf-8 -*-
@@ -31,7 +31,7 @@ python -m pip install git+https://github.com/fatfish-lab/aquarium-python-api.git
 
 ## Documentation
 
-Check our [documentation](https://docs.fatfish.app/dev/python/index.html) to find all the information you need.
+Check our [documentation](https://docs.python.aquarium.app/) to find all the information you need.
 
 ## Maintainer
 

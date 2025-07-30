@@ -5,7 +5,7 @@
 
 Cette documentation se concentre sur l'utilisation du package python.
 
-Nous vous conseillons de lire notre [introduction générale dans notre documentation développeur](https://docs.fatfish.app/#/dev/introduction).
+Nous vous conseillons de lire notre [introduction générale dans notre documentation développeur](https://docs.aquarium.app/api/introduction/).
 ```
 
 ## Connexion à Aquarium
@@ -116,7 +116,7 @@ Comme par exemple récupérer tous les projets accessibles à l'utilisateur acti
 Si certaines fonctions vous manque, n'hésitez pas à [nous contacter](support.md) pour que nous puissions les ajouter.
 ```
 
-Ces fonctions vous permettent de gagner du temps en évitant de vous plonger dans [meshQL](https://docs.fatfish.app/#/dev/meshql), le langage qui permet d'écrire les requêtes dans Aquarium.
+Ces fonctions vous permettent de gagner du temps en évitant de vous plonger dans [meshQL](https://docs.aquarium.app/api/meshql/), le langage qui permet d'écrire les requêtes dans Aquarium.
 
 Mais si vous êtes curieux, vous pouvez [activer le mode DEBUG du package](troubleshoot.md), afin de visualiser les requêtes meshQL qui sont utilisés dans ces fonctions.
 
