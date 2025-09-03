@@ -218,20 +218,21 @@ class Aquarium(object):
 
     def signin(self, email='', password=''):
         """
-        Sign in a user with its email and password
-
-        :param      email:     The email of the user
-        :type       email:     string
-        :param      password:  The password of the user
-        :type       password:  string
+        Alias of :func:`~aquarium.items.user.User.signin`
         """
         return self.user.signin(email=email, password=password)
 
-    def connect(self, email='', password=''):
+    def connect(self, email='', password='', otp_code=''):
         """
-        Alias of :func:`~aquarium.aquarium.Aquarium.signin`
+        Alias of :func:`~aquarium.items.user.User.connect`
         """
-        return self.user.signin(email=email, password=password)
+        return self.user.connect(email=email, password=password, otp_code=otp_code)
+
+    def verify_otp(self, email='', challenge='', code=''):
+        """
+        Alias of :func:`~aquarium.items.user.User.verify_otp`
+        """
+        return self.user.verify_otp(email=email, challenge=challenge, code=code)
 
     def signout(self):
         """
