@@ -23,7 +23,7 @@ author='Fatfish Lab'
 
 # The full version, including alpha/beta/rc tags
 
-release='2.1.1-beta.1'
+release='2.2.0'
 
 
 
