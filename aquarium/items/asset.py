@@ -48,7 +48,7 @@ class Asset(Item):
 
         tasks=self.traverse(meshql=query, aliases=aliases)
         if not tasks or len(tasks) == 0:
-            raise RuntimeError('Could not find request')
+            raise RuntimeError('Could not find task with name "{0}" on item "{1}"'.format(task_name, self._key))
 
         media_key = tasks[0].get('mediaKey')
         task = self.parent.cast(tasks[0]['item'])
