@@ -92,13 +92,17 @@ class Item(Entity):
         payload = {
             "item": {
                 "type": type,
-                "data": data
             },
             "edge": {
                 "type": edge_type,
-                "data": edge_data
             }
         }
+
+        if data is not None:
+            payload["item"]["data"] = data
+
+        if edge_data is not None:
+            payload["edge"]["data"] = edge_data
 
         if apply_template is not None:
             payload["applyTemplate"] = apply_template
